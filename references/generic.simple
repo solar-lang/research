@@ -1,0 +1,36 @@
+
+# Example One
+
+generic T
+type Maybe = Some T | Nothing
+
+-- .vs.
+
+type Maybe :: T = Some T | Nothing
+
+
+
+-- btw. what if we begin Markdown this way in Code?
+# ## Example two
+# > Some Quote
+#
+# |let|me |
+# |---|:--|
+# |show|you|
+# |this|table|
+generic T, Z
+function map(list: List T, f T -> Z) -> List Z = match list
+      is []             then []
+      or [x, ..rest]    then [f x, ..map rest];
+
+
+function map(list: List T, f T -> Z) :: T, Z -> List Z = match list
+      is []             then []
+      or [x, ..rest]    then [f x, ..map rest];
+
+
+
+
+NOTE:
+
+    I prefer the `generic` keyword

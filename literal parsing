@@ -1,0 +1,8 @@
+-- literal (never followed by `:`)
+    "String"
+    (expr (,expr)* )
+    [expr (,expr)* ]
+    6
+    <ident>
+    true
+    false

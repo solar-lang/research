@@ -1,0 +1,57 @@
+-- I like how no closing parenthesis are required here. Feels more extensible that way
+impl Sample for Button
+-   (render i Image:
+        ...
+    )
+
+
+interface Drawable
+- (draw self, canvas Canvas)
+
+function map(list: List T, f T -> Z) :: T, Z -> List Z {
+    -- if generic parameters have to be deduced, do so using `of T`
+    let l = (List of Z) :: new
+
+    for elem of list {
+        do push l (f elem);
+    }
+
+    return l;
+}
+
+function palindrom (list: List Char) -> Boolean =
+    match list
+        is [] then true
+        or [a] then true
+        or [a, ..between, b] then a == b && palindrom between
+
+let squarednumbers = [1 .. 100] | map (n) -> n^2
+
+do print squarednumbers;
+
+function range(from:Int32, to: Int32) -> Stream Int32 {
+    let channel = Channel of Int32 :: new
+
+    thread::spawn () => {
+        (from..=to) | each n -> do send channel n;
+
+        do close channel;
+    }
+
+    channel
+}
+
+-- lots of heavy crap below
+
+-- Maybe represent Integer ranges as Types
+# Unsigned Byte type
+type u8 = {0, ..., 255}
+-- While the former is close to Mathematical Notation, I think this might be worth improving
+type u8 = {0 .. 255}
+
+type EvenNumber = { 0, 2, ..., u64::MaxValue }
+-- This would automatically create a function for dealing with Numbers like this:
+
+EvenNumber (n) -> Maybe EvenNumber
+
+-- The Compiler would automatically deduce the best binary representation

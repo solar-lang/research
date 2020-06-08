@@ -1,0 +1,98 @@
+-- define functions like this
+(print:
+    write "Hello World"
+)
+
+-- generic function
+(square x t / t: x*x)
+
+-- can be written like this
+(square x: x*x)
+
+(sqrt x float: √x)
+
+x = 1, 4, 6, 7, 8;
+
+x | map square | join ',' | print;
+
+(add x float, y float: x+y)
+
+(x, x[1..]) | map
+
+#(Maybe / t: Some t | None)
+#(Node / t: value t, next Maybe t)
+
+-- structs
+#(Window:
+    frame Frame,
+    ui Dom
+)
+
+-- interfaces
+/(SampleInterface:
+    render (fn Image -> ())
+    getId (fn () -> u64)
+    setId (fn u64)
+)
+
+#(Button:
+    text Text,
+    onclick fn Event
+)
+
+-- I like how no closing parenthesis are required here. Feels more extensible that way
+
+impl Sample for Button
+-   (render i Image:
+        ...
+    )
+
+enum Gender = Male | Female
+
+struct Person
+- name String
+- born Time
+- gender Gender
+
+
+struct Node ::  T
+- value T
+- next Node T
+
+enum Maybe :: T
+|   Some T
+|   None
+
+function map(list: List T, f T -> Z) :: T, Z -> List Z {
+    -- if generic parameters have to be deduced, do so using `of T`
+    let l = List of Z
+
+    for elem of list {
+        do push l elem;
+    }
+
+    return l;
+}
+
+function map(list: List T, f T -> Z) :: T, Z -> List Z = match list
+      is []             then []
+      or [x, ..rest]    then [f x, ..map rest];
+
+
+-- this was more fun to write
+(map list of List t, f of t->z :: t, z -> List Z:
+    match list
+        is [] then []
+        or [x, ..rest] then [f x, ..map rest]
+)
+
+(palindrom list of List Char -> Boolean:
+    match list
+    is [] then true
+    or [a] then true
+    or [a, ..between, b] then a == b && palindrom between
+)
+
+let squarednumbers = [1 .. 100] | map (n) -> n^2
+
+do print squarednumbers;
