@@ -2,11 +2,11 @@ if exists("b:current_syntax")
     finish
 endif
 
-syn keyword structureKeyword type function trait let
+syn keyword structureKeyword type function trait let generic where
 
 syn keyword controllFlowKeyword if else then do match is or return
 
-syn keyword operatorKeyword = + - ! * /  | && < > <= >= ^ ||
+" syn keyword operatorKeyword = + - ! * /  | && < > <= >= ^ ||
 
 syn region string start='"' end='"'
 
