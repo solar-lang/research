@@ -1,0 +1,31 @@
+
+Description of macros
+
+type 1.)
+
+<macro> { ... }
+<macro> [ ... ]
+<macro> ( ... )
+
+Here everything between the parenthesis (and the <macro> part) will simply be replaced with the output of the macro.
+The Macro only receive the content inside the parenthesis as arguments.
+
+
+type 2.)
+
+<macro 1>
+function x() ...
+
+
+<macro 2>
+other stuff ...
+
+everything below the <macro> field will be used as the input to the macro field.
+like this:
+<macro 1>
+X
+<macro 2>
+Y
+
+will be replaced with:
+<macro 1>( X <macro 2>(Y))
