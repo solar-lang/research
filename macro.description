@@ -29,3 +29,17 @@ Y
 
 will be replaced with:
 <macro 1>( X <macro 2>(Y))
+
+
+# Part 2
+
+While all of this was AST parsing, this is just the tip of the iceberg.
+We often need, for example, type information. The AST does not yet provide this.
+Macros can be propagated to the next form of presentation.
+
+Let's recall the compilation steps
+
+Source Code -> AST -> IR -> Result
+where the result depends on which backend compiler get's used (a modular architecture will be used, where the compiler and the parser only communicate via IR as input, e.g. compiler(IR) -> Result)
+
+The Macros may be propagated to the IR, where the backend compiler get's to decide what to do.
