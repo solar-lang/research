@@ -1,0 +1,11 @@
+# Identifiers
+
+identifiers in Solar are supposed to
+- contain characters a-z|A-Z|0-0|_
+- start with a-z|A-Z
+- may not contain 2 consecutive _
+- may not end on _
+
+
+proper identifier match the regex
+[a-z|A-Z](_?[a-z|A-Z|0-9]+)*
