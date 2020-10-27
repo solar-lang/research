@@ -58,3 +58,18 @@ function prepend_one(value: In) -> R = value*2 + 1
 -- one can see, that the generic parameters for the input are the only relevant ones
 -- rather than interfaces, only function definitions are needed
 -- it's a rather primitive type system
+
+
+-- Now, what if we require a function, that does not return a type?
+generic T
+    where
+    send(T, String)
+function notify(value: T) {
+    send(T, "https://someside.com")
+}
+
+-- EASY!
+
+
+-- Decision: These complex generic restrictions should not be available for types (for now...) to keep the language simple.
+-- It would cost a lot of effort: Instead of checking just the generic headline on a function, one would also need to check all available restrictions on a type
