@@ -19,11 +19,7 @@ impl<'a> Parse<'a> for Identifier<'a> {
             return Err(nom::Err::Error((s, nom::error::ErrorKind::Tag)));
         }
 
-        if !is_valid(&name) {
-            return Err(nom::Err::Error((s, nom::error::ErrorKind::Tag)));
-        }
-
-        if !is_keyword(&name) {
+        if !keyword::is_keyword(&name) {
             return Err(nom::Err::Error((s, nom::error::ErrorKind::Tag)));
         }
 

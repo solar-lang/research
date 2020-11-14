@@ -1,0 +1,21 @@
+# no tuples
+
+at least not like this: (a, b)
+
+## why?
+
+
+Generic Notation:
+
+Map (Key, Value)
+would be recognozed as Map<(Key, Value, _>
+should be recognozed as Map<Key, Value>
+
+
+## Solution
+
+[1.0, 2.0, 3.0] : [f32; 3] = [f32, f32, f32]
+> auto derive `index(usize) -> f32`
+
+["hello", 42] : [String, Int64]
+> don't derive `index`

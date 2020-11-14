@@ -1,4 +1,4 @@
-mod identifiers;
+mod identifier;
 mod parse;
 mod util;
 pub(crate) use parse::Parse;
