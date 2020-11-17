@@ -7,7 +7,6 @@ pub struct Identifier<'a> {
     pub pos: Span<'a>,
 }
 
-// TODO escape keywords!
 impl<'a> Parse<'a> for Identifier<'a> {
     fn parse(s: Span<'a>) -> nom::IResult<Span, Self> {
         use nom::bytes::complete::take_while;
@@ -22,8 +21,6 @@ impl<'a> Parse<'a> for Identifier<'a> {
         if !keyword::is_keyword(&name) {
             return Err(nom::Err::Error((s, nom::error::ErrorKind::Tag)));
         }
-
-        // TODO check, if this is not a keyword
 
         let identifier = Identifier {
             name: format!("{}", name),
