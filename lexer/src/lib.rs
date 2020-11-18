@@ -15,6 +15,25 @@ enum Token {
     #[token("]")]
     BracketClose,
 
+    #[token(":")]
+    DotDot,
+
+    #[token("|")]
+    Pipe,
+
+    #[token(".")]
+    Dot,
+
+    #[token(",")]
+    Comma,
+
+    #[token("->")]
+    Arrow,
+
+    // TODO arithmetic op
+    //
+    // TODO comments
+
     // Keywords
     #[token("let")]
     LetKeyword,
@@ -59,6 +78,10 @@ enum Token {
     #[token("pub")]
     PubKeyword,
 
+    // redundancy
+    #[regex("( \n\r\t)+")]
+    Whitespace,
+
     // TODO check
     #[regex("[a-zA-Z][a-zA-Z0-9_]*")]
     Identifier,
@@ -71,9 +94,19 @@ enum Token {
     #[regex("[0-9]+.[0-9]+(e-?[0-9]+)?")]
     Float,
 
+    // TODO string
+    //
     // Logos requires one token variant to handle errors,
     // it can be named anything you wish.
     #[error]
     // #[regex(r"[ \t\n\f]+", logos::skip)]
     Error,
+}
+
+#[cfg(test)]
+mod test {
+    #[test]
+    fn many_tokens() {
+        let input = "fn something()"
+    }
 }
