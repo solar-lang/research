@@ -28,3 +28,15 @@ pub fn key_function(s: Span) -> IResult<Span, Span> {
 pub fn key_let(s: Span) -> IResult<Span, Span> {
     key("let")(s)
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    #[test]
+    fn test_keywords() {
+        let result = key_function("function".into());
+        assert!(result.is_ok());
+        let result = key_function("let".into());
+        assert!(result.is_err());
+    }
+}
