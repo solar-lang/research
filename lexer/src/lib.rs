@@ -2,6 +2,18 @@ use logos::Logos;
 
 #[derive(Logos, Debug, PartialEq)]
 enum Token {
+    #[token("(")]
+    ParenOpen,
+    #[token(")")]
+    ParenClose,
+    #[token("{")]
+    CurlyOpen,
+    #[token("}")]
+    CurlyClose,
+    #[token("[")]
+    BracketOpen,
+    #[token("]")]
+    BracketClose,
 
     // Keywords
     #[token("let")]
@@ -41,9 +53,23 @@ enum Token {
     #[token("const")]
     ConstKeyword,
     #[token("use")]
-    AsyncKeyword,
-    #[token("async")]
     UseKeyword,
+    #[token("async")]
+    AsyncKeyword,
+    #[token("pub")]
+    PubKeyword,
+
+    // TODO check
+    #[regex("[a-zA-Z][a-zA-Z0-9_]*")]
+    Identifier,
+
+    // TODO check
+    #[regex("(0[xbo])?[0-9A-Fa-f_]*")]
+    Integer,
+
+    // TODO check
+    #[regex("[0-9]+.[0-9]+(e-?[0-9]+)?")]
+    Float,
 
     // Logos requires one token variant to handle errors,
     // it can be named anything you wish.
