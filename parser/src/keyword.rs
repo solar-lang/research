@@ -17,8 +17,10 @@ pub fn is_keyword(input: &str) -> bool {
 
 fn key(word: &'static str) -> impl Fn(Span) -> IResult<Span, Span> {
     use nom::character::complete::one_of;
+    use nom::combinator::opt;
     use nom::{bytes::complete::tag, sequence::delimited};
-    move |s| delimited(ws, tag(word), one_of(" \n\r\t"))(s)
+
+    move |s| delimited(ws, tag(word), opt(one_of(" \n\r\t")))(s)
 }
 
 pub fn key_function(s: Span) -> IResult<Span, Span> {

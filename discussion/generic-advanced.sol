@@ -73,3 +73,11 @@ function notify(value: T) {
 
 -- Decision: These complex generic restrictions should not be available for types (for now...) to keep the language simple.
 -- It would cost a lot of effort: Instead of checking just the generic headline on a function, one would also need to check all available restrictions on a type
+
+
+
+# numeric generics
+type Vector T; N
+- value: [T; N]
+
+# one can see that all numeric generic parameters are splitted of by a semicolon
