@@ -11,3 +11,15 @@ where
         Self::parse(rest)
     }
 }
+
+// utility trait so one can just call .parse on any string
+// and the annoted type get's parsed (or a panic occurs)
+pub trait StrParse<T> {
+    fn must_parse(self) -> T;
+}
+
+impl<'a, T: Parse<'a>> StrParse<T> for &'a str {
+    fn must_parse(self) -> T {
+        T::parse_ws(Span::from(self)).expect("parsing failed").1
+    }
+}

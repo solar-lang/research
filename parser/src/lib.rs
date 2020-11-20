@@ -6,7 +6,7 @@ mod structs;
 mod types;
 mod util;
 
-pub(crate) use parse::Parse;
+pub(crate) use parse::{Parse, StrParse};
 
 pub(crate) use nom_locate::LocatedSpan;
 

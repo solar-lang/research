@@ -1,32 +1,34 @@
+-- GOING with this for now
 
-generic S
-enum Tree[S]
+type Pair S
+- left S
+- right S
+
+type Tree S
 |   value S
-|   branches
-      - left Tree S
-      - right Tree S
-
+|   branches Pair (Tree S, Tree S)
 
 generic S
-function huffman(list: List (S, float)) -> Tree S {
-    let sorted = sort list
+function huffman(list List [S, Float32]) -> Tree S {
+    let sorted List [S, Float32] = sort list
 
     return match sorted
         is []
+}
 
 
     --- vs ---
 
 
-enum Tree S
-| value S
-| branches
-    - left Tree S
-    - right Tree S
+type Tree S
+| value: S
+| branches:
+    - left: Tree S
+    - right: Tree S
 
 generic S
 function huffman(list: List Tree S) -> Tree S =
-    match list
+    match (sort list)
     is []   then panic "May not be empty"
     or [a]  then Tree.value a
-    or [a, b] then Tree.banches left: Tree.value a right: Tree.value b
+    or [a, b] then Tree.banches (Pair left= Tree.value a    right= Tree.value b)
