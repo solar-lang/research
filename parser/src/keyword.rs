@@ -23,6 +23,14 @@ fn key(word: &'static str) -> impl Fn(Span) -> IResult<Span, Span> {
     move |s| delimited(whitespace, tag(word), opt(one_of(" \n\r\t")))(s)
 }
 
+pub fn key_get(s: Span) -> IResult<Span, Span> {
+    key("get")(s)
+}
+
+pub fn key_set(s: Span) -> IResult<Span, Span> {
+    key("set")(s)
+}
+
 pub fn key_function(s: Span) -> IResult<Span, Span> {
     key("function")(s)
 }
