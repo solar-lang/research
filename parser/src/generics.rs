@@ -1,12 +1,13 @@
 use crate::identifier::Identifier;
-use crate::Parse;
+use crate::{Parse, Span};
 
-/// Generic type parameters
+/// Generic type params
 /// for structs
 /// either Parameter
 /// or (Parameter, ...)
 pub struct GenericHeader<'a> {
-    parameters: Vec<Identifier<'a>>,
+    pub pos: Span<'a>,
+    pub params: Vec<Identifier<'a>>,
 }
 
 impl<'a> Parse<'a> for GenericHeader<'a> {
@@ -20,12 +21,16 @@ impl<'a> Parse<'a> for GenericHeader<'a> {
 
         let ident_list = separated_list(tag_ws(","), Identifier::parse_ws);
 
-        map(
+        ws(map(
             alt((
                 map(Identifier::parse, |v| vec![v]),
                 delimited(tag("("), ident_list, tag_ws(")")),
             )),
-            |parameters| GenericHeader { parameters },
-        )(s)
+            |params| GenericHeader {
+                // TODO this is wrong. The span needs to hold until the end of parameters
+                pos: params[0].pos,
+                params,
+            },
+        ))(s)
     }
 }
