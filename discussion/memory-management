@@ -1,0 +1,10 @@
+I am tryting to create the single best suited langauge for beginners.
+While that is an unreachable goal, it's a nice maxima for decisions.
+
+Therefore the language will be garbage collected.
+
+In case someone needs manual memory management (e..g gor c interop) the type system should express this.
+
+Example: Just write `Man` in front of a type to make it non garabage collected.
+
+While this looks exactly like a `type Man T` (which I like) it will behave a little different.
