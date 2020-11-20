@@ -19,17 +19,24 @@ pub fn ws<'a, T: 'a + Sized>(
     }
 }
 
-pub fn tag_ws<'a>(s: Span<'a>) -> impl Fn(Span<'a>) -> nom::IResult<Span<'a>, Span<'a>> {
-    move |input| preceded(whitespace, tag(*s))(input)
+pub fn tag_ws<'a>(s: &'a str) -> impl Fn(Span<'a>) -> nom::IResult<Span<'a>, Span<'a>> {
+    move |input| preceded(whitespace, tag(s))(input)
 }
 
 #[cfg(test)]
 mod test {
     use super::{tag_ws, whitespace, ws};
+    use crate::Span;
 
     #[test]
-    fn whitespace() {
-        let input = "    hello world";
-        assert_eq!(whitespace(input), Ok(("hello world", "    ")))
+    fn check_whitespace_combinators_work() {
+        let input = Span::from("    hello world");
+        let (rest, parsed) = whitespace(input).unwrap();
+        assert_eq!(*rest, "hello world");
+        assert_eq!(*parsed, "    ");
+
+        let (rest, parsed) = tag_ws("hello")(input).unwrap();
+        assert_eq!(*rest, " world");
+        assert_eq!(*parsed, "hello");
     }
 }
