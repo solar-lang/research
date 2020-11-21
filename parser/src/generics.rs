@@ -12,7 +12,7 @@ pub struct GenericHeader<'a> {
 
 impl<'a> Parse<'a> for GenericHeader<'a> {
     fn parse(s: crate::Span<'a>) -> nom::IResult<crate::Span<'a>, Self> {
-        use crate::util::{tag_ws, ws};
+        use crate::util::tag_ws;
         use nom::branch::alt;
         use nom::bytes::complete::tag;
         use nom::combinator::map;
@@ -21,7 +21,7 @@ impl<'a> Parse<'a> for GenericHeader<'a> {
 
         let ident_list = separated_list(tag_ws(","), Identifier::parse_ws);
 
-        ws(map(
+        map(
             alt((
                 map(Identifier::parse, |v| vec![v]),
                 delimited(tag("("), ident_list, tag_ws(")")),
@@ -31,7 +31,7 @@ impl<'a> Parse<'a> for GenericHeader<'a> {
                 pos: params[0].pos,
                 params,
             },
-        ))(s)
+        )(s)
     }
 }
 
