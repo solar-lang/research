@@ -34,3 +34,16 @@ impl<'a> Parse<'a> for GenericHeader<'a> {
         ))(s)
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::StrParse;
+    #[test]
+    fn generic_headers_parse() {
+        let input = "S";
+        let result: GenericHeader = input.must_parse();
+
+        assert_eq!(result.params[0].name, "S");
+    }
+}

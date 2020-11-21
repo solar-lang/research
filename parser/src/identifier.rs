@@ -8,11 +8,11 @@ pub struct Identifier<'a> {
 
 impl<'a> Parse<'a> for Identifier<'a> {
     fn parse(s: Span<'a>) -> nom::IResult<Span, Self> {
-        use nom::bytes::complete::take_while;
+        use nom::bytes::complete::{take_while, take_while1};
         use nom::combinator::recognize;
         use nom::sequence::pair;
 
-        let (rest, name) = recognize(pair(take_while(alpha), take_while(identchar)))(s)?;
+        let (rest, name) = recognize(pair(take_while1(alpha), take_while(identchar)))(s)?;
         if !is_valid(&name) {
             return Err(nom::Err::Error((s, nom::error::ErrorKind::Tag)));
         }
@@ -33,6 +33,10 @@ impl<'a> Parse<'a> for Identifier<'a> {
 // check last char of a string is not an underscore
 fn is_valid(s: &str) -> bool {
     let slice = s.as_bytes();
-    let last_char = slice[slice.len() - 1];
-    last_char != b'_'
+    if let Some(last_char) = slice.iter().nth_back(0) {
+        return *last_char != b'_';
+    }
+
+    // empty string
+    true
 }
