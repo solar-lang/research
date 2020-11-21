@@ -13,13 +13,16 @@ impl<'a> Parse<'a> for Identifier<'a> {
         use nom::sequence::pair;
 
         let (rest, name) = recognize(pair(take_while1(alpha), take_while(identchar)))(s)?;
-        if !is_valid(&name) {
-            return Err(nom::Err::Error((s, nom::error::ErrorKind::Tag)));
-        }
 
-        if !keyword::is_keyword(&name) {
-            return Err(nom::Err::Error((s, nom::error::ErrorKind::Tag)));
-        }
+        // TODO identifier validation
+
+        // if !is_valid(&name) {
+        //     return Err(nom::Err::Error((s, nom::error::ErrorKind::Tag)));
+        // }
+
+        // if !keyword::is_keyword(&name) {
+        //     return Err(nom::Err::Error((s, nom::error::ErrorKind::Tag)));
+        // }
 
         let identifier = Identifier {
             name: format!("{}", name),
@@ -37,6 +40,23 @@ fn is_valid(s: &str) -> bool {
         return *last_char != b'_';
     }
 
-    // empty string
-    true
+    // empty string shouldn't happen. But it's wrong if it does
+    false
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    #[test]
+    fn check_ident_validation() {
+        assert_eq!(is_valid("hello_"), false);
+        assert_eq!(is_valid("hello_world"), true);
+    }
+
+    #[test]
+    fn identifier_parsing() {
+        let (rest, ident) = Identifier::parse(Span::from("Something_beaut1fu7 ")).unwrap();
+        assert_eq!(*rest, " ");
+        assert_eq!(ident.name, "Something_beaut1fu7");
+    }
 }

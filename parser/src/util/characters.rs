@@ -1,6 +1,6 @@
 #[inline(always)]
 pub fn alpha(c: char) -> bool {
-    c >= 'a' && c <= 'z' || c >= 'a' && c <= 'Z'
+    c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z'
 }
 
 #[inline(always)]
