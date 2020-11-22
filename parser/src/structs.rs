@@ -1,6 +1,6 @@
 // Holds all information about parsing record types in solar
 
-use crate::{generics::*, identifier::Identifier, types::Type, Parse, Span, StrParse};
+use crate::{generics::*, identifier::Identifier, types::Type, Parse, Span};
 use nom::{
     branch::alt,
     bytes::complete::tag,
@@ -23,8 +23,11 @@ impl<'a> Parse<'a> for Structure<'a> {
         // pub
         let (rest, public) = opt(key_pub)(s)?;
         let public = public.is_some();
-        // type Node
-        let (rest, name) = preceded(key_type, Identifier::parse_ws)(rest)?;
+        // type
+        let (rest, _) = key_type(rest)?;
+        // Note: after this all errors are non recoverable
+        // Node
+        let (rest, name) = Identifier::parse_ws(rest)?;
         let pos = name.pos;
         // T
         let (rest, generics) = GenericHeader::parse_ws(rest)?;
@@ -50,7 +53,11 @@ mod test {
     use super::*;
     #[test]
     fn parsing_entire_structs_works() {
-        let input = "type Node T - value T - next Node T";
+        let input = "
+        type Node T 
+        - value T 
+        - next Node T
+        ";
         // let expected = {
         //     let name: Identifier = "Node".must_parse();
         //     let generics = "T".must_parse();
@@ -65,9 +72,9 @@ mod test {
         //     }
         // };
 
-        let output: Structure = input.must_parse();
-        assert_eq!(output.public, false);
-        assert_eq!(&output.name.name, "Node");
+        let output = Structure::parse_ws(Span::from(input));
+        assert!(output.is_ok());
+        // TODO test more extensive
     }
 }
 
