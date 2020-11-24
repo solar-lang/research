@@ -6,7 +6,6 @@ use nom::{
     bytes::complete::tag,
     combinator::{map, opt},
     multi::many1,
-    sequence::preceded,
 };
 
 pub struct Structure<'a> {
@@ -20,9 +19,12 @@ pub struct Structure<'a> {
 impl<'a> Parse<'a> for Structure<'a> {
     fn parse(s: Span<'a>) -> nom::IResult<Span<'a>, Self> {
         use crate::keyword::{key_pub, key_type};
+
         // pub
         let (rest, public) = opt(key_pub)(s)?;
         let public = public.is_some();
+
+        dbg!(&rest);
         // type
         let (rest, _) = key_type(rest)?;
         // Note: after this all errors are non recoverable
@@ -53,11 +55,12 @@ mod test {
     use super::*;
     #[test]
     fn parsing_entire_structs_works() {
-        let input = "
-        type Node T 
-        - value T 
+        let input = Span::from("
+        pub type Node T
+        - value T
         - next Node T
-        ";
+        ");
+
         // let expected = {
         //     let name: Identifier = "Node".must_parse();
         //     let generics = "T".must_parse();
@@ -72,7 +75,7 @@ mod test {
         //     }
         // };
 
-        let output = Structure::parse_ws(Span::from(input));
+        let output = Structure::parse_ws(input);
         assert!(output.is_ok());
         // TODO test more extensive
     }
@@ -141,8 +144,6 @@ pub struct StructFields<'a> {
     pub fields: Vec<StructField<'a>>,
 }
 
-// Person (name= "Nils", age = 23)
-// Person name="Nils", age = 23, preference = (Computer os="macOS", vendor="apple)
 // Person name="Nils" age=23 preference=(Computer os="macOS" vendor="apple)
 impl<'a> Parse<'a> for StructFields<'a> {
     fn parse(s: Span<'a>) -> nom::IResult<Span<'a>, Self> {

@@ -7,7 +7,7 @@ where
 {
     fn parse(s: Span<'a>) -> nom::IResult<Span<'a>, Self>;
     fn parse_ws(s: Span<'a>) -> nom::IResult<Span<'a>, Self> {
-        let (_, rest) = whitespace(s)?;
+        let (rest, _whitespace_characters) = whitespace(s)?;
         Self::parse(rest)
     }
 }
