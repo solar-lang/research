@@ -8,6 +8,7 @@ use nom::{
     multi::many1,
 };
 
+#[derive(Clone, Debug)]
 pub struct Structure<'a> {
     pub pos: Span<'a>,
     pub public: bool,
@@ -24,7 +25,6 @@ impl<'a> Parse<'a> for Structure<'a> {
         let (rest, public) = opt(key_pub)(s)?;
         let public = public.is_some();
 
-        dbg!(&rest);
         // type
         let (rest, _) = key_type(rest)?;
         // Note: after this all errors are non recoverable
@@ -76,11 +76,14 @@ mod test {
         // };
 
         let output = Structure::parse_ws(input);
+        dbg!(&output);
         assert!(output.is_ok());
         // TODO test more extensive
     }
 }
 
+
+#[derive(Clone, Debug)]
 pub enum EnumOrStructFields<'a> {
     Enum(EnumFields<'a>),
     Struct(StructFields<'a>),
@@ -95,6 +98,7 @@ impl<'a> Parse<'a> for EnumOrStructFields<'a> {
     }
 }
 
+#[derive(Clone, Debug)]
 pub struct EnumFields<'a> {
     pub pos: Span<'a>,
     pub states: Vec<EnumField<'a>>,
@@ -114,6 +118,7 @@ impl<'a> Parse<'a> for EnumFields<'a> {
     }
 }
 
+#[derive(Clone, Debug)]
 pub struct EnumField<'a> {
     pub pos: Span<'a>,
     pub name: Identifier<'a>,
@@ -139,6 +144,7 @@ impl<'a> Parse<'a> for EnumField<'a> {
     }
 }
 
+#[derive(Clone, Debug)]
 pub struct StructFields<'a> {
     pub pos: Span<'a>,
     pub fields: Vec<StructField<'a>>,
@@ -147,13 +153,14 @@ pub struct StructFields<'a> {
 // Person name="Nils" age=23 preference=(Computer os="macOS" vendor="apple)
 impl<'a> Parse<'a> for StructFields<'a> {
     fn parse(s: Span<'a>) -> nom::IResult<Span<'a>, Self> {
-        let (rest, fields) = many1(StructField::parse)(s)?;
+        let (rest, fields) = many1(StructField::parse_ws)(s)?;
         let pos = fields[0].pos;
 
         Ok((rest, StructFields { pos, fields }))
     }
 }
 
+#[derive(Clone, Debug)]
 pub struct StructField<'a> {
     pub pos: Span<'a>,
     pub name: Identifier<'a>,

@@ -1,6 +1,8 @@
 use crate::util::characters::*;
 use crate::*;
 
+
+#[derive(Clone, Debug)]
 pub struct Identifier<'a> {
     pub name: String,
     pub pos: Span<'a>,

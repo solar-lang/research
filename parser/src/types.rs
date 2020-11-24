@@ -6,6 +6,7 @@ use crate::{identifier::Identifier, Parse, Span};
 /// let m: Map (String, Int64)
 ///
 /// TODO not enough to represent [Int64, String] or [Float64; 4] etc.
+#[derive(Clone, Debug)]
 pub struct Type<'a> {
     pub pos: Span<'a>,
     // Name of type

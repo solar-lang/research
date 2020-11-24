@@ -5,6 +5,7 @@ use crate::{Parse, Span};
 /// for structs
 /// either Parameter
 /// or (Parameter, ...)
+#[derive(Clone, Debug)]
 pub struct GenericHeader<'a> {
     pub pos: Span<'a>,
     pub params: Vec<Identifier<'a>>,
