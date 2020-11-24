@@ -9,6 +9,15 @@ type Tree S
 |   branches Pair (Tree S, Tree S)
 
 generic S
+    where
+    add(S, S) -> S
+function sum(t Tree S) -> Tree S =
+    match t
+    is value v then v
+    is branches Pair (a, b) then sum a + sum b
+
+
+generic S
 function huffman(list List [S, Float32]) -> Tree S {
     let sorted List [S, Float32] = sort list
 
