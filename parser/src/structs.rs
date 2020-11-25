@@ -169,7 +169,9 @@ pub struct StructField<'a> {
 
 impl<'a> Parse<'a> for StructField<'a> {
     fn parse(s: Span<'a>) -> nom::IResult<Span<'a>, Self> {
+        dbg!(s);
         let (rest, _) = tag("-")(s)?;
+        dbg!(rest);
 
         let (rest, name) = Identifier::parse_ws(rest)?;
 
