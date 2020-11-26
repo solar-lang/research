@@ -1,4 +1,4 @@
-use crate::util::{tag_ws, whitespace};
+use crate::util::{tag_ws, whitespace, ws};
 use crate::{identifier::Identifier, Parse, Span};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
@@ -31,12 +31,10 @@ impl<'a> Parse<'a> for Type<'a> {
         let follow = {
             let type_list = separated_list(tag_ws(","), Type::parse_ws);
 
-            let (rest, _ws) = whitespace(rest)?;
-
-            alt((
+            ws(alt((
                 map(Type::parse_ws, |t| vec![t]),
                 delimited(tag("("), type_list, tag_ws(")")),
-            ))
+            )))
         };
 
         if let Ok((rest, params)) = follow(rest) {
@@ -44,7 +42,14 @@ impl<'a> Parse<'a> for Type<'a> {
         }
 
         // TODO pos has to include all parameters. Right now it only spans the first identifier.
-        Ok((rest, Type { name, params: Vec::new(), pos }))
+        Ok((
+            rest,
+            Type {
+                name,
+                params: Vec::new(),
+                pos,
+            },
+        ))
     }
 }
 
