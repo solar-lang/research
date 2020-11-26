@@ -1,11 +1,11 @@
-use crate::util::{tag_ws, ws};
+use crate::util::{tag_ws, whitespace};
 use crate::{identifier::Identifier, Parse, Span};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::multi::separated_list;
 use nom::sequence::delimited;
 
-use nom::multi::many1;
+use nom::{combinator::map, multi::many1};
 
 /// Represents a type with full generics attached.
 /// e.g.
@@ -28,17 +28,23 @@ impl<'a> Parse<'a> for Type<'a> {
         let (rest, name) = Identifier::parse(s)?;
         let pos = name.pos;
 
-        let (rest, params) = {
+        let follow = {
             let type_list = separated_list(tag_ws(","), Type::parse_ws);
 
-            ws(alt((
-                many1(Type::parse_ws),
+            let (rest, _ws) = whitespace(rest)?;
+
+            alt((
+                map(Type::parse_ws, |t| vec![t]),
                 delimited(tag("("), type_list, tag_ws(")")),
-            )))(rest)?
+            ))
         };
 
+        if let Ok((rest, params)) = follow(rest) {
+            return Ok((rest, Type { name, params, pos }));
+        }
+
         // TODO pos has to include all parameters. Right now it only spans the first identifier.
-        Ok((rest, Type { name, params, pos }))
+        Ok((rest, Type { name, params: Vec::new(), pos }))
     }
 }
 
