@@ -1,5 +1,4 @@
 use crate::util::whitespace;
-use crate::Located;
 use crate::Span;
 
 pub trait Parse<'a>
