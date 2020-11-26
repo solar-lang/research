@@ -50,39 +50,6 @@ impl<'a> Parse<'a> for Structure<'a> {
     }
 }
 
-#[cfg(test)]
-mod test {
-    use super::*;
-    #[test]
-    fn parsing_entire_structs_works() {
-        let input = Span::from("
-        pub type Node T
-        - value T
-        - next Node T
-        ");
-
-        // let expected = {
-        //     let name: Identifier = "Node".must_parse();
-        //     let generics = "T".must_parse();
-        //     let fields = "- value T - next Node T".must_parse();
-
-        //     Structure {
-        //         pos: name.pos,
-        //         name,
-        //         generics,
-        //         fields,
-        //         public: false,
-        //     }
-        // };
-
-        let output = Structure::parse_ws(input);
-        dbg!(&output);
-        assert!(output.is_ok());
-        // TODO test more extensive
-    }
-}
-
-
 #[derive(Clone, Debug)]
 pub enum EnumOrStructFields<'a> {
     Enum(EnumFields<'a>),
@@ -153,10 +120,21 @@ pub struct StructFields<'a> {
 // Person name="Nils" age=23 preference=(Computer os="macOS" vendor="apple)
 impl<'a> Parse<'a> for StructFields<'a> {
     fn parse(s: Span<'a>) -> nom::IResult<Span<'a>, Self> {
-        let (rest, fields) = many1(StructField::parse_ws)(s)?;
+        // let (rest, fields) = many1(StructField::parse_ws)(s)?;
+        let mut input = s;
+        let mut fields = Vec::new();
+        loop {
+            if let Ok((rest, field)) = StructField::parse_ws(input) {
+                input = rest;
+                fields.push(field);
+            } else {
+                break;
+            }
+        }
+
         let pos = fields[0].pos;
 
-        Ok((rest, StructFields { pos, fields }))
+        Ok((input, StructFields { pos, fields }))
     }
 }
 
@@ -169,9 +147,7 @@ pub struct StructField<'a> {
 
 impl<'a> Parse<'a> for StructField<'a> {
     fn parse(s: Span<'a>) -> nom::IResult<Span<'a>, Self> {
-        dbg!(s);
         let (rest, _) = tag("-")(s)?;
-        dbg!(rest);
 
         let (rest, name) = Identifier::parse_ws(rest)?;
 
@@ -187,3 +163,46 @@ impl<'a> Parse<'a> for StructField<'a> {
         ))
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn individual_struct_field() {
+        let input = Span::from("
+        - value Node T");
+
+        let result = StructField::parse_ws(input);
+        assert!(result.is_ok());
+        let (rest, _field) = result.unwrap();
+        assert_eq!(*rest, "")
+    }
+    #[test]
+    fn parsing_entire_structs_works() {
+        let input = Span::from("
+        pub type Node T
+        - value T
+        - next Node T
+        ");
+
+        // let expected = {
+        //     let name: Identifier = "Node".must_parse();
+        //     let generics = "T".must_parse();
+        //     let fields = "- value T - next Node T".must_parse();
+
+        //     Structure {
+        //         pos: name.pos,
+        //         name,
+        //         generics,
+        //         fields,
+        //         public: false,
+        //     }
+        // };
+
+        let output = Structure::parse_ws(input);
+        assert!(output.is_ok());
+        // TODO test more extensive
+    }
+}
+

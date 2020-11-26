@@ -41,3 +41,14 @@ impl<'a> Parse<'a> for Type<'a> {
         Ok((rest, Type { name, params, pos }))
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    #[test]
+    fn parsing_simple_types() {
+        let input = Span::from("Node T");
+        let result = Type::parse(input);
+        assert!(result.is_ok());
+    }
+}
