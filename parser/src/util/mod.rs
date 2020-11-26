@@ -29,6 +29,15 @@ mod test {
     use crate::Span;
 
     #[test]
+    fn plain_ws_function() {
+        use nom::bytes::complete::tag;
+        let input = Span::from("    hello world");
+        let (rest, parsed) = ws(tag("hello"))(input).unwrap();
+        assert_eq!(*rest, " world");
+        assert_eq!(*parsed, "hello");
+    }
+
+    #[test]
     fn check_whitespace_combinators_work() {
         let input = Span::from("    hello world");
         let (rest, parsed) = whitespace(input).unwrap();
