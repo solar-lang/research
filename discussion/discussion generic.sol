@@ -40,4 +40,4 @@ function huffman(list: List Tree S) -> Tree S =
     match (sort list)
     is []   then panic "May not be empty"
     or [a]  then Tree.value a
-    or [a, b] then Tree.banches (Pair left= Tree.value a    right= Tree.value b)
+    or [a, b] then Tree.branches left=(Tree.value a) right=(Tree.value b)

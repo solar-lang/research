@@ -23,6 +23,13 @@ pub fn tag_ws<'a>(s: &'a str) -> impl Fn(Span<'a>) -> nom::IResult<Span<'a>, Spa
     move |input| preceded(whitespace, tag(s))(input)
 }
 
+pub fn to_failure<E>(e: nom::Err<E>) -> nom::Err<E> {
+    match e {
+        nom::Err::Error(e) => nom::Err::Failure(e),
+        e => e
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::{tag_ws, whitespace, ws};

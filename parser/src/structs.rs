@@ -1,6 +1,6 @@
 // Holds all information about parsing record types in solar
 
-use crate::{generics::*, identifier::Identifier, types::Type, Parse, Span};
+use crate::{generics::*, identifier::Identifier, types::Type, util::to_failure, Parse, Span};
 use nom::{
     branch::alt,
     bytes::complete::tag,
@@ -27,15 +27,18 @@ impl<'a> Parse<'a> for Structure<'a> {
 
         // type
         let (rest, _) = key_type(rest)?;
-        // Note: after this all errors are non recoverable
+
+        // after this all errors are non recoverable
+        // because no other token may be recognized
+
         // Node
-        let (rest, name) = Identifier::parse_ws(rest)?;
+        let (rest, name) = Identifier::parse_ws(rest).map_err(to_failure)?;
         let pos = name.pos;
         // T
-        let (rest, generics) = GenericHeader::parse_ws(rest)?;
+        let (rest, generics) = GenericHeader::parse_ws(rest).map_err(to_failure)?;
         // - value: T
         // - next: Node T
-        let (rest, fields) = EnumOrStructFields::parse_ws(rest)?;
+        let (rest, fields) = EnumOrStructFields::parse_ws(rest).map_err(to_failure)?;
 
         Ok((
             rest,
@@ -73,6 +76,7 @@ pub struct EnumFields<'a> {
 
 impl<'a> Parse<'a> for EnumFields<'a> {
     fn parse(s: Span<'a>) -> nom::IResult<Span<'a>, Self> {
+        // TODO implement parsing of `= Left A | Right B`
         let (rest, states) = many1(EnumField::parse_ws)(s)?;
 
         Ok((
@@ -170,8 +174,10 @@ mod test {
 
     #[test]
     fn individual_struct_field() {
-        let input = Span::from("
-        - value Node T");
+        let input = Span::from(
+            "
+        - value Node T",
+        );
 
         let result = StructField::parse_ws(input);
         assert!(result.is_ok());
@@ -180,11 +186,13 @@ mod test {
     }
     #[test]
     fn parsing_entire_structs_works() {
-        let input = Span::from("
+        let input = Span::from(
+            "
         pub type Node T
         - value T
         - next Node T
-        ");
+        ",
+        );
 
         // let expected = {
         //     let name: Identifier = "Node".must_parse();
@@ -205,4 +213,3 @@ mod test {
         // TODO test more extensive
     }
 }
-

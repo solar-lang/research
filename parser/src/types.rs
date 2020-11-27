@@ -1,11 +1,13 @@
-use crate::util::{tag_ws, whitespace, ws};
+// TODO
+// - ! Include Function Signatures (e.g. A -> B)
+// - ? Include Slices (e.g. [Float])
+use crate::util::{tag_ws, ws};
 use crate::{identifier::Identifier, Parse, Span};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
+use nom::combinator::map;
 use nom::multi::separated_list;
 use nom::sequence::delimited;
-
-use nom::{combinator::map, multi::many1};
 
 /// Represents a type with full generics attached.
 /// e.g.
