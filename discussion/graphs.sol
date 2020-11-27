@@ -1,21 +1,17 @@
-#   # Thinking about Type Shortcuts
-#   Type aliases
-#   - [] is Array
-#   - ?  is Maybe
-#   - {} is Set
-
 type Graph
-- Set Node
-- Set Link
+- nodes Set Node
+- edges Set Edge
 
-type Link
-- connection: Node, Node
-- weight: float32
-
-function oneof(l: Link, elem): boolean = match l
-    is elem, _ then true
-    or _, elem then true
-    else false
+type Edge
+- connection [Node, Node]
+- weight Float32
 
 type Node
-- name: String
+- name String
+
+function contains(g Graph, elem Node) -> boolean = g.nodes : find (n) -> n == elem
+
+function oneof(l Edge, elem Node) -> boolean = match l.connection
+    is [x, _] if x == elem then true
+    or [_, x] if x == elem then true
+    else false

@@ -1,5 +1,6 @@
 // TODO
 // - ! Include Function Signatures (e.g. A -> B)
+// - ! Include Tuples (e.g. [Float, Float, Float])
 // - ? Include Slices (e.g. [Float])
 use crate::util::{tag_ws, ws};
 use crate::{identifier::Identifier, Parse, Span};
