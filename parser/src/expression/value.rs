@@ -1,14 +1,10 @@
 use nom::{
     branch::alt,
-    bytes::complete::escaped_transform,
-    bytes::complete::take_while_m_n,
-    bytes::complete::{tag, take, take_while, take_while1},
-    character::complete::none_of,
-    combinator::{map, opt, recognize},
+    bytes::complete::{tag, take, take_while, take_while1, take_while_m_n},
+    combinator::map,
     multi::many1,
     number::complete::recognize_float,
     sequence::preceded,
-    sequence::terminated,
 };
 
 use super::Expression;
@@ -84,6 +80,10 @@ fn parse_string_content<'a>(
 ) -> nom::IResult<Span<'a>, StringBuilder<'a>> {
     let (rest, content) = take_while(|c| c != '"' && c != '\\')(s)?;
 
+    if rest.len() == 0 {
+        // TODO error here
+    }
+
     // check if character was a " (end of string)
     if rest.as_bytes()[0] == b'"' {
         // End of string is reached
@@ -144,5 +144,42 @@ fn parse_string_content<'a>(
             builder.content.push_str(*span);
             parse_string_content(builder, rest)
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    #[test]
+    fn parsing_str_parts() {
+        let input = Span::new("hello world\"");
+        let (rest, builder) = parse_string_content(StringBuilder::default(), input).unwrap();
+
+        assert_eq!(*rest, "\"");
+        assert_eq!(
+            builder,
+            StringBuilder {
+                content: String::from("hello world"),
+                expression: None,
+            }
+        );
+    }
+
+    #[test]
+    fn parsing_str_parts_with_expression() {
+        let input = Span::new("hello \\(<expr>) \"");
+        let (rest, builder) = parse_string_content(StringBuilder::default(), input).unwrap();
+
+        assert_eq!(*rest, " \"");
+        assert_eq!(builder.content, String::from("hello "));
+    }
+
+    #[test]
+    fn parsing_str_parts_escaped() {
+        let input = Span::new("hello \\u33\"");
+        let (rest, builder) = parse_string_content(StringBuilder::default(), input).unwrap();
+
+        assert_eq!(*rest, "\"");
+        assert_eq!(builder.content, String::from("hello \u{33}"));
     }
 }
