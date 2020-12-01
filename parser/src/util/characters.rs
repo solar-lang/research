@@ -19,6 +19,11 @@ pub fn digit8(c: char) -> bool {
 }
 
 #[inline(always)]
+pub fn digit2(c: char) -> bool {
+    c == '0' || c == '1'
+}
+
+#[inline(always)]
 pub fn alphanumeric(c: char) -> bool {
     alpha(c) || digit10(c)
 }
