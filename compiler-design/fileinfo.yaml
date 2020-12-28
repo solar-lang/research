@@ -1,0 +1,40 @@
+# What kind of information do we want to get, when reading a `*.sol` file?
+#
+# Result: Ok | Err
+# containing the errors of the file, be it during parsing or semantic checking (I think that's all that can go wrong at this point)
+#
+# Also: We want to cache every file somehow! WHAT is it, we'd like to cache? This is what this file is trying to document and I am trying to find out
+
+path: "std.array"   # unique key to access this
+filename: "/Users/nilsmartel/.solar/libraries/std/1.2.3/src/array.sol"
+submodules: [] "array of paths"
+types:
+  # TODO how would this look for an enum?
+  - name: "Array"
+    public: true
+    documentation: ""
+    genericParamters:
+      - name: "T"
+        documentation: ""
+    fields:
+      - name: "length"
+        type: "std.primitive.Usize" # note: we don't need to specify if this is public, because getters and setters will be exposed as methods
+      - name: "capacity"
+        type: "std.primitive.Usize"
+      - name: "elements"
+        type:
+          type: "std.primitive.Pointer"
+          genericParamters:
+            - self: "T"   # Types = String | {type: string, genericParamters: []Type} | "self": "String"
+functions:
+  - name: "new"
+    public: true
+    documentation: "Create an empty Array"
+    genericParamters:
+      - name: "T"
+        documentation: "Type this Array may hold"
+    genericConstraints: []
+    returnType:
+      - path: "std.array.Array"
+        genericParamters:
+          - self: "T"
