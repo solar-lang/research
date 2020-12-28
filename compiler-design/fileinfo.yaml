@@ -1,3 +1,5 @@
+# TODO: one also needs to have access to all instructions, I think it's safe having them in SSA form already
+
 # What kind of information do we want to get, when reading a `*.sol` file?
 #
 # Result: Ok | Err
