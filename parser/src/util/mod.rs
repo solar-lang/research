@@ -4,6 +4,13 @@ use nom::sequence::preceded;
 
 pub mod characters;
 
+pub fn whitespace1(s: Span) -> nom::IResult<Span, Span> {
+    use nom::bytes::complete::take_while1;
+
+    take_while1(characters::whitespace)(s)
+}
+
+
 pub fn whitespace(s: Span) -> nom::IResult<Span, Span> {
     use nom::bytes::complete::take_while;
 
