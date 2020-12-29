@@ -4,34 +4,32 @@ use crate::*;
 
 #[derive(Clone, Debug)]
 pub struct Identifier<'a> {
-    pub name: String,
-    pub pos: Span<'a>,
+    pub name: &'a str,
 }
 
 impl<'a> Parse<'a> for Identifier<'a> {
-    fn parse(s: Span<'a>) -> nom::IResult<Span, Self> {
+    fn parse(s: Span<'a>) -> nom::IResult<Span, (Span, Self)> {
         use nom::bytes::complete::{take_while, take_while1};
         use nom::combinator::recognize;
         use nom::sequence::pair;
 
-        let (rest, name) = recognize(pair(take_while1(alpha), take_while(identchar)))(s)?;
+        let (rest, span) = recognize(pair(take_while1(alpha), take_while(identchar)))(s)?;
 
         // TODO identifier validation
 
-        // if !is_valid(&name) {
+        // if !is_valid(&span) {
         //     return Err(nom::Err::Error((s, nom::error::ErrorKind::Tag)));
         // }
 
-        // if !keyword::is_keyword(&name) {
+        // if !keyword::is_keyword(&span) {
         //     return Err(nom::Err::Error((s, nom::error::ErrorKind::Tag)));
         // }
 
         let identifier = Identifier {
-            name: format!("{}", name),
-            pos: name,
+            name: &span,
         };
 
-        Ok((rest, identifier))
+        Ok((rest, (span, identifier)))
     }
 }
 
