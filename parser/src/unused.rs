@@ -9,6 +9,7 @@ use nom::{
 };
 
 /// Syntacitc element that bears no meaning for the code itself
+#[derive(Clone, Debug)]
 pub enum Unused<'a> {
     Whitespace(Span<'a>),
     Comment(Span<'a>),

@@ -1,6 +1,6 @@
 // Holds all information about parsing record types in solar
 
-use crate::{generics::*, identifier::Identifier, types::Type, util::to_failure, Parse, Span};
+use crate::{generics::*, identifier::Identifier, types::Type, util::to_failure, Parse, Span, Token};
 use nom::{
     branch::alt,
     bytes::complete::tag,
@@ -10,15 +10,14 @@ use nom::{
 
 #[derive(Clone, Debug)]
 pub struct Structure<'a> {
-    pub pos: Span<'a>,
     pub public: bool,
-    pub name: Identifier<'a>,
-    pub generics: GenericHeader<'a>,
+    pub name: Token<'a, Identifier<'a>>,
+    pub generics: Token<'a, GenericHeader<'a>>,
     pub fields: EnumOrStructFields<'a>,
 }
 
 impl<'a> Parse<'a> for Structure<'a> {
-    fn parse(s: Span<'a>) -> nom::IResult<Span<'a>, Self> {
+    fn parse_direct(s: Span<'a>) -> nom::IResult<Span<'a>, Self> {
         use crate::keyword::{key_pub, key_type};
 
         // pub
@@ -33,17 +32,15 @@ impl<'a> Parse<'a> for Structure<'a> {
 
         // Node
         let (rest, name) = Identifier::parse_ws(rest).map_err(to_failure)?;
-        let pos = name.pos;
         // T
         let (rest, generics) = GenericHeader::parse_ws(rest).map_err(to_failure)?;
         // - value: T
         // - next: Node T
-        let (rest, fields) = EnumOrStructFields::parse_ws(rest).map_err(to_failure)?;
+        let (rest, fields) = EnumOrStructFields::parse_direct(rest).map_err(to_failure)?;
 
         Ok((
             rest,
             Structure {
-                pos,
                 public,
                 name,
                 generics,
@@ -55,51 +52,28 @@ impl<'a> Parse<'a> for Structure<'a> {
 
 #[derive(Clone, Debug)]
 pub enum EnumOrStructFields<'a> {
-    Enum(EnumFields<'a>),
-    Struct(StructFields<'a>),
+    Enum(Vec<Token<'a, EnumField<'a>>>),
+    Struct(Vec<Token<'a, StructField<'a>>>),
 }
 
 impl<'a> Parse<'a> for EnumOrStructFields<'a> {
-    fn parse(s: Span<'a>) -> nom::IResult<Span<'a>, Self> {
+    fn parse_direct(s: Span<'a>) -> nom::IResult<Span<'a>, Self> {
         alt((
-            map(EnumFields::parse, EnumOrStructFields::Enum),
-            map(StructFields::parse, EnumOrStructFields::Struct),
+            map(many1(EnumField::parse_ws), EnumOrStructFields::Enum),
+            map(many1(StructField::parse_ws), EnumOrStructFields::Struct),
         ))(s)
     }
 }
-
-#[derive(Clone, Debug)]
-pub struct EnumFields<'a> {
-    pub pos: Span<'a>,
-    pub states: Vec<EnumField<'a>>,
-}
-
-impl<'a> Parse<'a> for EnumFields<'a> {
-    fn parse(s: Span<'a>) -> nom::IResult<Span<'a>, Self> {
-        // TODO implement parsing of `= Left A | Right B`
-        let (rest, states) = many1(EnumField::parse_ws)(s)?;
-
-        Ok((
-            rest,
-            EnumFields {
-                pos: states[0].pos,
-                states,
-            },
-        ))
-    }
-}
-
 #[derive(Clone, Debug)]
 pub struct EnumField<'a> {
-    pub pos: Span<'a>,
-    pub name: Identifier<'a>,
+    pub name: Token<'a, Identifier<'a>>,
     // Optional value. For now can only hold one type.
     // and now name assiciated with that field
-    pub value: Option<Type<'a>>,
+    pub value: Option<Token<'a, Type<'a>>>,
 }
 
 impl<'a> Parse<'a> for EnumField<'a> {
-    fn parse(s: Span<'a>) -> nom::IResult<Span<'a>, Self> {
+    fn parse_direct(s: Span<'a>) -> nom::IResult<Span<'a>, Self> {
         let (rest, _) = tag("|")(s)?;
         let (rest, name) = Identifier::parse_ws(rest)?;
         let (rest, value) = opt(Type::parse_ws)(rest)?;
@@ -107,7 +81,6 @@ impl<'a> Parse<'a> for EnumField<'a> {
         Ok((
             rest,
             EnumField {
-                pos: name.pos,
                 name,
                 value,
             },
@@ -116,41 +89,13 @@ impl<'a> Parse<'a> for EnumField<'a> {
 }
 
 #[derive(Clone, Debug)]
-pub struct StructFields<'a> {
-    pub pos: Span<'a>,
-    pub fields: Vec<StructField<'a>>,
-}
-
-// Person name="Nils" age=23 preference=(Computer os="macOS" vendor="apple)
-impl<'a> Parse<'a> for StructFields<'a> {
-    fn parse(s: Span<'a>) -> nom::IResult<Span<'a>, Self> {
-        // let (rest, fields) = many1(StructField::parse_ws)(s)?;
-        let mut input = s;
-        let mut fields = Vec::new();
-        loop {
-            if let Ok((rest, field)) = StructField::parse_ws(input) {
-                input = rest;
-                fields.push(field);
-            } else {
-                break;
-            }
-        }
-
-        let pos = fields[0].pos;
-
-        Ok((input, StructFields { pos, fields }))
-    }
-}
-
-#[derive(Clone, Debug)]
 pub struct StructField<'a> {
-    pub pos: Span<'a>,
-    pub name: Identifier<'a>,
-    pub value: Type<'a>,
+    pub name: Token<'a, Identifier<'a>>,
+    pub value: Token<'a, Type<'a>>,
 }
 
 impl<'a> Parse<'a> for StructField<'a> {
-    fn parse(s: Span<'a>) -> nom::IResult<Span<'a>, Self> {
+    fn parse_direct(s: Span<'a>) -> nom::IResult<Span<'a>, Self> {
         let (rest, _) = tag("-")(s)?;
 
         let (rest, name) = Identifier::parse_ws(rest)?;
@@ -160,7 +105,6 @@ impl<'a> Parse<'a> for StructField<'a> {
         Ok((
             rest,
             StructField {
-                pos: name.pos,
                 name,
                 value,
             },
@@ -195,9 +139,9 @@ mod test {
         );
 
         // let expected = {
-        //     let name: Identifier = "Node".must_parse();
-        //     let generics = "T".must_parse();
-        //     let fields = "- value T - next Node T".must_parse();
+        //     let name: Identifier = "Node".must_parse_direct);
+        //     let generics = "T".must_parse_direct);
+        //     let fields = "- value T - next Node T".must_parse_direct);
 
         //     Structure {
         //         pos: name.pos,

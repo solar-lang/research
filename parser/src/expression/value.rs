@@ -11,7 +11,7 @@ use super::Expression;
 
 use crate::{
     util::characters::{digit10, digit16, digit2, digit8},
-    Parse, Span,
+    Parse, Span, Token
 };
 
 #[derive(Clone, Debug)]
@@ -27,7 +27,7 @@ pub struct FloatType<'a> {
 }
 
 impl<'a> Parse<'a> for FloatType<'a> {
-    fn parse(s: Span<'a>) -> nom::IResult<Span<'a>, Self> {
+    fn parse_direct(s: Span<'a>) -> nom::IResult<Span<'a>, Self> {
         map(recognize_float, |span| FloatType { span })(s)
     }
 }
@@ -38,7 +38,7 @@ pub struct IntegerType<'a> {
 }
 
 impl<'a> Parse<'a> for IntegerType<'a> {
-    fn parse(s: Span<'a>) -> nom::IResult<Span<'a>, Self> {
+    fn parse_direct(s: Span<'a>) -> nom::IResult<Span<'a>, Self> {
         let recognize_int = alt((
             take_while1(digit10),
             preceded(tag("0x"), take_while1(digit16)),
@@ -56,7 +56,7 @@ pub struct StringType<'a> {
 }
 
 impl<'a> Parse<'a> for StringType<'a> {
-    fn parse(s: Span<'a>) -> nom::IResult<Span<'a>, Self> {
+    fn parse_direct(s: Span<'a>) -> nom::IResult<Span<'a>, Self> {
         let (rest, start) = tag("\"")(s)?;
         let span = start;
 
@@ -70,9 +70,10 @@ impl<'a> Parse<'a> for StringType<'a> {
 #[derive(Default, Clone, Debug, Eq, PartialEq)]
 pub struct StringBuilder<'a> {
     pub content: String,
-    pub expression: Option<Expression<'a>>,
+    pub expression: Option<Token<'a, Expression<'a>>>,
 }
 
+// TODO delete this. I'm too ashamed of this mess
 // I've written a lot of bad code, this might be the worst yet
 fn parse_string_content<'a>(
     mut builder: StringBuilder<'a>,

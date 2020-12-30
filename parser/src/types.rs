@@ -3,7 +3,7 @@
 // - ! Include Tuples (e.g. [Float, Float, Float])
 // - ? Include Slices (e.g. [Float])
 use crate::util::{tag_ws, ws};
-use crate::{identifier::Identifier, Parse, Span};
+use crate::{identifier::Identifier, Parse, Span, Token};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::combinator::map;
@@ -18,18 +18,15 @@ use nom::sequence::delimited;
 /// TODO not enough to represent [Int64, String] or [Float64; 4] etc.
 #[derive(Clone, Debug)]
 pub struct Type<'a> {
-    pub pos: Span<'a>,
     // Name of type
     pub name: Identifier<'a>,
-
     // Generic parameters
-    pub params: Vec<Type<'a>>,
+    pub params: Vec<Token<'a, Type<'a>>>,
 }
 
-impl<'a> Parse<'a> for Type<'a> {
-    fn parse(s: Span<'a>) -> nom::IResult<Span<'a>, Self> {
-        let (rest, name) = Identifier::parse(s)?;
-        let pos = name.pos;
+impl<'a> Parse<'a> for Type<'a>  {
+    fn parse_direct(s: Span<'a>) -> nom::IResult<Span<'a>, Self> {
+        let (rest, name) = Identifier::parse_direct(s)?;
 
         let follow = {
             let type_list = separated_list(tag_ws(","), Type::parse_ws);
@@ -41,7 +38,7 @@ impl<'a> Parse<'a> for Type<'a> {
         };
 
         if let Ok((rest, params)) = follow(rest) {
-            return Ok((rest, Type { name, params, pos }));
+            return Ok((rest, Type { name, params }));
         }
 
         // TODO pos has to include all parameters. Right now it only spans the first identifier.
@@ -50,7 +47,6 @@ impl<'a> Parse<'a> for Type<'a> {
             Type {
                 name,
                 params: Vec::new(),
-                pos,
             },
         ))
     }

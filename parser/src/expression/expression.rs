@@ -9,7 +9,7 @@ pub struct Expression<'a> {
 }
 
 impl<'a> Parse<'a> for Expression<'a> {
-    fn parse(s: Span<'a>) -> nom::IResult<Span<'a>, Self> {
+    fn parse_direct(s: Span<'a>) -> nom::IResult<Span<'a>, Self> {
         // TODO implement proper Expression parsing
         map(tag("<expr>"), |span| Expression { span })(s)
     }

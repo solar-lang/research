@@ -4,12 +4,18 @@ use nom::sequence::preceded;
 
 pub mod characters;
 
+/// get the beginning section of a slice, before the next slice starts
+pub fn slice_before_offset<'a>(start: &'a str, after: &'a str) -> &'a str {
+    let len = after.as_bytes().as_ptr() as usize - start.as_bytes().as_ptr() as usize;
+
+    &start[..len]
+}
+
 pub fn whitespace1(s: Span) -> nom::IResult<Span, Span> {
     use nom::bytes::complete::take_while1;
 
     take_while1(characters::whitespace)(s)
 }
-
 
 pub fn whitespace(s: Span) -> nom::IResult<Span, Span> {
     use nom::bytes::complete::take_while;
@@ -33,14 +39,25 @@ pub fn tag_ws<'a>(s: &'a str) -> impl Fn(Span<'a>) -> nom::IResult<Span<'a>, Spa
 pub fn to_failure<E>(e: nom::Err<E>) -> nom::Err<E> {
     match e {
         nom::Err::Error(e) => nom::Err::Failure(e),
-        e => e
+        e => e,
     }
 }
 
 #[cfg(test)]
 mod test {
-    use super::{tag_ws, whitespace, ws};
+    use super::{slice_before_offset, tag_ws, whitespace, ws};
     use crate::Span;
+
+    #[test]
+    fn slicing() {
+        let raw = "0123456789";
+        let start = &raw[2..=8]; // 2345678
+        let after = &start[3..]; // 5678
+
+        let expected = "234";
+
+        assert_eq!(slice_before_offset(start, after), expected);
+    }
 
     #[test]
     fn plain_ws_function() {

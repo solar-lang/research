@@ -8,7 +8,7 @@ pub struct Identifier<'a> {
 }
 
 impl<'a> Parse<'a> for Identifier<'a> {
-    fn parse(s: Span<'a>) -> nom::IResult<Span, (Span, Self)> {
+    fn parse_direct(s: Span<'a>) -> nom::IResult<Span, Self> {
         use nom::bytes::complete::{take_while, take_while1};
         use nom::combinator::recognize;
         use nom::sequence::pair;
@@ -29,7 +29,7 @@ impl<'a> Parse<'a> for Identifier<'a> {
             name: &span,
         };
 
-        Ok((rest, (span, identifier)))
+        Ok((rest, identifier))
     }
 }
 
@@ -55,7 +55,7 @@ mod test {
 
     #[test]
     fn identifier_parsing() {
-        let (rest, ident) = Identifier::parse(Span::from("Something_beaut1fu7 ")).unwrap();
+        let (rest, ident) = Identifier::parse_direct(Span::from("Something_beaut1fu7 ")).unwrap();
         assert_eq!(*rest, " ");
         assert_eq!(ident.name, "Something_beaut1fu7");
     }
