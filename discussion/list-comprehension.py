@@ -1,32 +1,67 @@
+# conclusion: Don't use list comprhension
 
-def inorder(t):
-    if not t:
-        return []
+# we'd like to support list comprehension
 
-    return [for l in inorder(t.left), t.val, r for r in inorder(t.right)]
+[f x for x in somelist]
 
-def preorder(t):
-    if not t:
-        return []
-    return [t.val, l for l in inorder(t.left), r for r in inorder(t.right)]
+# will be compiled to:
+{
+    let buffer = Buffer.with_capacity (len somelist)
+
+    for x in somelist {
+        push buffer (f x)
+    }
+
+    buffer
+}
+
+[f x for x in somelist if condition x]
+
+# will be compiled to:
+{
+    let buffer = Array.new
+
+    for x in somelist {
+        if condition x {
+            push buffer (f x)
+        }
+    }
+
+    buffer
+}
 
 
-# THIS LOOKS LIKE SHIT UP THERE
+# But all of this is useful for arrays
+# Though I've came to think the default should be vectors
 
-# this looks MUCH better
 
-def inorder(t):
-    if not t:
-        return []
+# alternative:
+# Use iterators all together!
 
-    return inorder(t.left) + [t.val] + inorder(t.right)
+[f x for x in somelist if condition x]
 
-def preorder(t):
-    if not t:
-        return []
-    return [t.val] + preorder(t.left) + preorder(t.right)
+somelist :filter condition: map f
 
-def postorder(t):
-    if not t:
-        return []
-    return preorder(t.left) + preorder(t.right) + [t.val]
+
+# now the latter is actually easier to write out and one has to remember less syntax
+
+
+# This is were it would get interesting
+[f x y for x in 0..width, y in 0..height]
+
+# alt 1
+{
+    let buffer = Buffer.with_capacity (len 0..width * len 0..height)
+
+    for x in 0..width {
+        for y in 0..height {
+            push buffer (f x y)
+        }
+    }
+
+    buffer
+}
+
+# alt 2
+
+0..width: map (x => x, 0..height) :map f
