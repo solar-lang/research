@@ -6,3 +6,6 @@
 # Char implements
 #
 # autokonvert(self) -> String
+
+
+there are reasons against using autokonvert, which would disallow this as well
