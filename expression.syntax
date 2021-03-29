@@ -1,0 +1,54 @@
+-- best with haskell syntax highlighting
+
+
+-- TODO: identifier must include a path
+identifer
+   -- - path?
+   - ([a-z][A-Z])+([a-z][A-Z][0-9])*(_([a-z][A-Z][0-9])*)*
+
+fullexpression
+    - fe1 (":", fe1)*
+fe1
+    - fe2 ("and" fe2)*
+    {-- ...
+        "or"
+        +
+        -
+        *
+        /
+        a^a
+        √a
+        -a
+        !a
+        a
+    --}
+
+expression
+    / functioncall
+    / value
+
+value
+    / bool
+    / int
+    / float
+    / string
+    / closure
+    / array
+    / "|" fullexpression "|"
+    -- tuple or parenthesis
+    / "(" fullexpression ** "," ")"
+    / identifier
+    -- Might be included. Complicates things. Hard to read for beginners
+    -- / "$" expression
+
+-- sin 3.14
+-- call "Sally" "+1489732567890" (Message from="david" text="Hello world")
+-- call person="Sally" number="+012345678" message=(Message from"david" text="Hello world")
+functioncall
+    - identifier
+    - functioncallarg*
+
+functioncallarg
+    - (identifier "=")?
+    - functioncallarg
+
