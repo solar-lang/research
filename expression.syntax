@@ -3,10 +3,10 @@
 fullidentifer
    -- TODO path
    - path?
-   - ([a-z][A-Z])+([a-z][A-Z][0-9])*(_([a-z][A-Z][0-9])*)*
+   - identifer
 
 identifer
-   -- - path?
+   -- NOTE: not <keyword>
    - ([a-z][A-Z])+([a-z][A-Z][0-9])*(_([a-z][A-Z][0-9])*)*
 
 fullexpression
@@ -60,10 +60,16 @@ objectguard
     - fullidentifier
     - ((identifier "=")? literal)*
 
+tupleguard
+    - "("
+    - matchguard ** ","
+    - ")"
+
 matchguard
     / literal
     / objectguard
     / arrayguard
+    / tupleguard
     / identifer
 
 match
@@ -81,8 +87,17 @@ closure
 
 blockexpression
     - "{"
-    - fullexpression ** ";"
+    -- there may be as many ; as you need. They are only needed to separate expression
+    - (be-part / ";")*
     - "}"
+
+be-part
+    / "let" identifer "=" fullexpression
+    / "return" fullexpression?
+    / fullexpression
+    / "loop" blockexpression
+    / "for" identifer "in" (fullexpression not blockexpression) blockexpression
+
 
 -- sin 3.14
 -- call "Sally" "+1489732567890" (Message from="david" text="Hello world")
