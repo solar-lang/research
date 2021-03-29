@@ -1,0 +1,33 @@
+main =
+    imports
+    codeBody
+
+imports =
+    (
+        "use" __
+            ("all" | "(" sep(identifier, ",") ")" )
+        "from" __
+        packageIdentifier __
+    )*
+
+packageIdentifier = packageName | packagePath
+packageName = "unimplemented"
+packagePath = stringLiteral
+
+codeBody =
+    (
+        function
+        | typeDecl // |const
+    )*
+
+typeDecl =
+    "type" __ identifier _ "=" (structFields | enumFields)
+
+structFields =
+    (
+        ("-" | "+") _ ("mut" __ )? identifier __ type
+    )+
+
+function
+
+type = identifier generics?
