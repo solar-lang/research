@@ -1,7 +1,10 @@
 -- best with haskell syntax highlighting
 
+fullidentifer
+   -- TODO path
+   - path?
+   - ([a-z][A-Z])+([a-z][A-Z][0-9])*(_([a-z][A-Z][0-9])*)*
 
--- TODO: identifier must include a path
 identifer
    -- - path?
    - ([a-z][A-Z])+([a-z][A-Z][0-9])*(_([a-z][A-Z][0-9])*)*
@@ -12,6 +15,7 @@ fe1
     - fe2 ("and" fe2)*
     {-- ...
         "or"
+        ++
         +
         -
         *
@@ -27,31 +31,57 @@ expression
     / functioncall
     / value
 
-value
+literal
     / bool
     / int
     / float
     / string
+
+value
+    / literal
+    / fullidentifier
     / closure
     / array
     / "|" fullexpression "|"
     -- tuple or parenthesis
     / "(" fullexpression ** "," ")"
     / match
-    / identifier
     / blockexpression
     -- Might be included. Complicates things. Hard to read for beginners
     -- / "$" fullexpression
 
+arrayguard
+    - "["
+    - (matchguard ** ",")
+    - "]"
+    - ("++ " identifer)?
+
+objectguard
+    - fullidentifier
+    - ((identifier "=")? literal)*
+
+matchguard
+    / literal
+    / objectguard
+    / arrayguard
+    / identifer
 
 match
     - "match" fullexpression
     - "is" matchguard "then" fullexpression
     - ("or" matchguard "then" fullexpression)+
+    - ("else" fullexpression)?
+
+closure
+    - "("
+    - functionarguments ** ","
+    - ")"
+    - "=>"
+    - fullexpression
 
 blockexpression
     - "{"
-    - fullexpression*
+    - fullexpression ** ";"
     - "}"
 
 -- sin 3.14
