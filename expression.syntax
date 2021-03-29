@@ -20,7 +20,7 @@ fe1
         √a
         -a
         !a
-        a
+        <expression>
     --}
 
 expression
@@ -37,9 +37,22 @@ value
     / "|" fullexpression "|"
     -- tuple or parenthesis
     / "(" fullexpression ** "," ")"
+    / match
     / identifier
+    / blockexpression
     -- Might be included. Complicates things. Hard to read for beginners
-    -- / "$" expression
+    -- / "$" fullexpression
+
+
+match
+    - "match" fullexpression
+    - "is" matchguard "then" fullexpression
+    - ("or" matchguard "then" fullexpression)+
+
+blockexpression
+    - "{"
+    - fullexpression*
+    - "}"
 
 -- sin 3.14
 -- call "Sally" "+1489732567890" (Message from="david" text="Hello world")
@@ -50,5 +63,5 @@ functioncall
 
 functioncallarg
     - (identifier "=")?
-    - functioncallarg
+    - value
 
