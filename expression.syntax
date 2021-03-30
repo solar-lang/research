@@ -75,7 +75,6 @@ matchguard
 match
     - "match" fullexpression
     - "is" matchguard "then" fullexpression
-    - ("or" matchguard "then" fullexpression)+
     - ("else" fullexpression)?
 
 closure
