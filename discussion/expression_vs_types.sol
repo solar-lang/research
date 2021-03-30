@@ -14,3 +14,6 @@ while expressions get read like this
     a(b, c)
 
     instead of a(b(c))
+
+
+-- TODO: Map (A,B) might be ambiguos to tuple types! oh no

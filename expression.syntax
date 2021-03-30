@@ -10,7 +10,8 @@ identifer
    - ([a-z][A-Z])+([a-z][A-Z][0-9])*(_([a-z][A-Z][0-9])*)*
 
 fullexpression
-    - fe1 (":", fe1)*
+    - fe0 (":", fe0)*
+    - fe1 (".", fe1)* -- see: discussion/dot-openrator.sol
 fe1
     - fe2 ("and" fe2)*
     {-- ...
@@ -95,7 +96,8 @@ be-part
     / "return" fullexpression?
     / fullexpression
     / "loop" blockexpression
-    / "for" identifer "in" (fullexpression not blockexpression) blockexpression
+    / "if" fullexpression "do" blockexpression
+    / "for" identifer "in" fullexpression "do" blockexpression
 
 
 -- sin 3.14

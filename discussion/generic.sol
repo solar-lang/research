@@ -12,7 +12,7 @@ generic I, R
 function map(list List I, f I -> R) -> List R =
     match list
         is [] then []
-        or [elem, ..rest] then f elem ++ map rest
+        is [elem, ..rest] then f elem ++ map rest
 
 
 -- can also be written as
@@ -22,8 +22,8 @@ function map(list, f) = match list
     or [elem, ..rest] then [f elem] ++ map rest
 
 
-generic A 
-    where 
+generic A
+    where
     neg A -> A
     add A A -> A
 function subtract(left A, right A) -> A = left + -right

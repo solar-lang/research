@@ -5,16 +5,16 @@ type Pair S
 - right S
 
 type Tree S
-|   value S
-|   branches Pair (Tree S, Tree S)
+|   Value S
+|   Branches Pair (Tree S, Tree S)
 
 generic S
     where
     add(S, S) -> S
 function sum(t Tree S) -> Tree S =
     match t
-    is value v then v
-    is branches Pair (a, b) then sum a + sum b
+    is Value v then v
+    is Branches Pair (a, b) then sum a + sum b
 
 
 generic S

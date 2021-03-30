@@ -5,9 +5,9 @@
 # cli struct
 type Args
   # cli string
-- filetype
+- filetype String
   # cli regex
-- pattern
+- pattern String
 
 -- this might be simple comments.
 -- there's no shame in only supporting one line comments for now

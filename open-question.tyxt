@@ -1,0 +1,6 @@
+- How to we distinct many generic arguments and tuples?
+    Both look like (A, B)
+
+- How do we write FunctionType
+    (A, B) -> C
+
