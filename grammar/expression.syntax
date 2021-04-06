@@ -45,14 +45,14 @@ value
     / "|" fullexpression "|"
     -- tuple or parenthesis
     / "(" fullexpression ** "," ")"
-    / match
+    / when
     / blockexpression
     -- Might be included. Complicates things. Hard to read for beginners
     -- / "$" fullexpression
 
 arrayguard
     - "["
-    - (matchguard ** ",")
+    - (whenguard ** ",")
     - "]"
     - ("++ " identifer)?
 
@@ -62,19 +62,19 @@ objectguard
 
 tupleguard
     - "("
-    - matchguard ** ","
+    - whenguard ** ","
     - ")"
 
-matchguard
+whenguard
     / literal
     / objectguard
     / arrayguard
     / tupleguard
     / identifer
 
-match
-    - "match" fullexpression
-    - "is" matchguard "then" fullexpression
+when
+    - "when" fullexpression
+    - "is" whenguard "then" fullexpression
     - ("else" fullexpression)?
 
 closure

@@ -4,7 +4,7 @@ keyword =
     / "let"
     / "and" -- may be used as function name
     / "or" -- may be used as function name
-    / "match"
+    / "when"
     / "when"
     / "is"
     / "then"
