@@ -1,0 +1,13 @@
+-- when is nicer than match, since when is really nice to type
+
+when
+    -- the default when
+    / when-classic
+    -- the if shorthand
+    / when-sugar
+
+when-sugar
+    - "when"
+    - fullexpression    -- must evaluate to Bool
+    - "then" fullexpression
+    - "else" fullexpression
