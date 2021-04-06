@@ -11,8 +11,6 @@ identifer
 
 fullexpression
     - fe0 (":", fe0)*
-    - fe1 (".", fe1)* -- see: discussion/dot-openrator.sol
-fe1
     - fe2 ("and" fe2)*
     {-- ...
         "or"
@@ -25,6 +23,7 @@ fe1
         √a
         -a
         !a
+    - fe1 (".", fe1)* -- see: discussion/dot-openrator.sol
         <expression>
     --}
 
@@ -83,22 +82,7 @@ closure
     - functionarguments ** ","
     - ")"
     - "=>"
-    - fullexpression
-
-blockexpression
-    - "{"
-    -- there may be as many ; as you need. They are only needed to separate expression
-    - (be-part / ";")*
-    - "}"
-
-be-part
-    / "let" identifer "=" fullexpression
-    / "return" fullexpression?
-    / fullexpression
-    / "loop" blockexpression
-    / "if" fullexpression "do" blockexpression
-    / "for" identifer "in" fullexpression "do" blockexpression
-
+    - expression
 
 -- sin 3.14
 -- call "Sally" "+1489732567890" (Message from="david" text="Hello world")

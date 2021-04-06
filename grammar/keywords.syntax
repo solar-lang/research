@@ -1,0 +1,17 @@
+keyword =
+    / "lib"
+    / "in"
+    / "let"
+    / "and" -- may be used as function name
+    / "or" -- may be used as function name
+    / "match"
+    / "when"
+    / "is"
+    / "then"
+    / "else"
+    / "return"
+    / "loop"
+    / "break"
+    / "set"
+    / "func"
+    / "function"

@@ -1,0 +1,18 @@
+
+blockexpression
+    - "{"
+    -- there may be as many ; as you need. They are only needed to separate expression
+    - (be-part / ";")*
+    - "}"
+
+be-part
+    / "let" identifer "=" fullexpression
+    -- return returns from the entire function
+    / "return" fullexpression?
+    / "break"
+    / fullexpression
+    / "loop" blockexpression
+    / "if" fullexpression "do" blockexpression
+    / "for" identifer "in" fullexpression "do" blockexpression
+
+
