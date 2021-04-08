@@ -1,0 +1,14 @@
+name: Test
+
+on:
+  push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install Dependencies
+      run: solar install
+    - name: Run Tests
+      run: solar test

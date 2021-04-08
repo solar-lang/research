@@ -1,0 +1,14 @@
+name: Build Package
+
+on:
+  push
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install Dependencies
+      run: solar install
+    - name: Build Project
+      run: solar build
