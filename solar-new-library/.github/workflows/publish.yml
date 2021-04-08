@@ -10,23 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Install Dependencies
-      run: solar install
-    - name: Build Project
-      run: solar build
     - name: Publish
-      run: |
-    - name: Publish
-      run: |
-        LATEST="$(git tag | head -1)"
-        if [ -z "$LATEST"]
-        then
-          exit 1
-        fi
-
-        solar publish \
-          --version "$LATEST" \
-          --token ${{ secrets.GITHUB_TOKEN }}
-      env:
-        CI: true
+      run: solar publish
 
