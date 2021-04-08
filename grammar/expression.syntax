@@ -10,10 +10,9 @@ identifer
    - ([a-z][A-Z])+([a-z][A-Z][0-9])*(_([a-z][A-Z][0-9])*)*
 
 fullexpression
-    - fe0 (":", fe0)*
-    - fe2 ("and" fe2)*
+    - fe0 ("and", fe0)*
+    - fe2 ("or" fe2)*
     {-- ...
-        "or"
         ++
         +
         -
@@ -23,6 +22,7 @@ fullexpression
         √a
         -a
         !a
+        a:a
     - fe1 (".", fe1)* -- see: discussion/dot-openrator.sol
         <expression>
     --}
@@ -53,8 +53,8 @@ value
 arrayguard
     - "["
     - (whenguard ** ",")
+    - (".." identifer)? -- while parenthesis are discouraged when possible, this helps distinct things visually
     - "]"
-    - ("++ " identifer)?
 
 objectguard
     - fullidentifier

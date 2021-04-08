@@ -7,7 +7,7 @@ type Person
 - name String
 - birthday Date
 - gender Gender
-+ hair HairColor mut
++ mut hair HairColor
 
 type Gender
 | Female
@@ -22,4 +22,4 @@ type HairColor
 
 pub function age(p Person) -> Time = p:birthday - now
 
-pub function sample_person() -> Person = Person name="Peter" birthday = (date.ymd 2003 03 17) gender Gender.Male hair HairColor.Red
+pub function sample_person() -> Person = Person name="Peter" birthday = (date.ymd 2003 03 17) gender=Gender.Male hair=HairColor.Red

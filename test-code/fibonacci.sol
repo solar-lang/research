@@ -1,5 +1,5 @@
 
-function fib(n Int) -> Int = match n
+function fib(n Int) -> Int = when n
     is 0 then 0
-    or 1 then 1
-    or x then fib (x-1) + fib (x-2)
+    is 1 then 1
+    is x then fib (x-1) + fib (x-2)
