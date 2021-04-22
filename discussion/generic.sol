@@ -10,20 +10,20 @@ type Maybe
 
 generic I, R
 function map(list List I, f I -> R) -> List R =
-    match list
+    when list
         is [] then []
-        is [elem, ..rest] then f elem ++ map rest
+        is [elem, rest..] then [f elem] ++ map rest
 
 
 -- can also be written as
 
-function map(list, f) = match list
+function map(list, f) = when list
     is [] then []
-    or [elem, ..rest] then [f elem] ++ map rest
-
+    is [elem, rest..] then [f elem] ++ map rest
 
 generic A
     where
     neg A -> A
     add A A -> A
 function subtract(left A, right A) -> A = left + -right
+

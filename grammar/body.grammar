@@ -1,0 +1,63 @@
+body
+- import*
+- functionOrType*
+
+functionOrType
+/ function
+/ typeDecl
+
+function
+-   genericStub?
+-   "pub"?
+-   "function"
+-   identifier
+-   "("
+-   type ** ","
+-   ")"
+-   ( "->" type )?
+-   "="
+-   expression
+
+genericStub
+- "generic"
+- identifier ** ","
+- where?
+
+where
+- "where"
+- whereclause+
+
+whereclause
+- identifier
+- "="
+- fullidentifier
+- "("
+- type ** ","
+- ")"
+
+
+typeDecl
+-   "type"
+- identifier
+- genericArgsDecl?
+- enumOrStructFields
+
+genericArgsDecl
+/ "(" identifier ** "," ")"
+/ identifier
+
+enumOrStructFields
+/ enumField*
+/ structField
+
+enumField
+-   "|"
+-   identifier
+-   type?
+
+structField
+- "-" | "+"
+- "mut"?
+- identifier
+- type
+
