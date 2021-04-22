@@ -51,9 +51,9 @@ value
     -- / "$" fullexpression
 
 arrayguard
-    - "["
+    - "[" -- while parenthesis are discouraged when possible, this helps distinct things visually
     - (whenguard ** ",")
-    - (".." identifer)? -- while parenthesis are discouraged when possible, this helps distinct things visually
+    - (identifer "..")?
     - "]"
 
 objectguard
