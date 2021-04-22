@@ -1,0 +1,20 @@
+imports
+    import *
+
+import
+-   "use"
+-   single
+
+selector
+/   "..."
+/   ( "." single )
+/   ( "." multi  )
+
+single
+- identifier
+- selector?
+
+multi
+- "("
+- single*
+- ")"
