@@ -1,6 +1,10 @@
 - How to we distinct many generic arguments and tuples?
     Both look like (A, B)
 
+> Multiple generic arguments ARE tuples
+
 - How do we write FunctionType
     (A, B) -> C
 
+
+> What's wrong with this?. TAKE THIIIIS
