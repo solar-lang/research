@@ -1,9 +1,15 @@
+-- vim: set syntax=haskell:
 -- best with haskell syntax highlighting
 
 fullidentifer
    -- TODO path
    - path?
    - identifer
+
+path
+    - ("lib" ".")?
+    - identifier
+    - ("." identifier )*
 
 identifer
    -- NOTE: not <keyword>

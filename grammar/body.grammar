@@ -9,7 +9,7 @@ functionOrType
 function
 -   genericStub?
 -   "pub"?
--   "function"
+-   "func"
 -   identifier
 -   "("
 -   type ** ","

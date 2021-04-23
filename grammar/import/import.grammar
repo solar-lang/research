@@ -1,3 +1,4 @@
+-- vim: set syntax=haskell:
 imports
     import *
 
@@ -6,7 +7,7 @@ import
 -   single
 
 selector
-/   "..."
+/   ".."
 /   ( "." single )
 /   ( "." multi  )
 

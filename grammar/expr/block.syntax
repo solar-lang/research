@@ -10,6 +10,7 @@ be-part
     -- return returns from the entire function
     / "return" fullexpression?
     / "break"
+    / "next"
     / fullexpression
     / "loop" blockexpression
     / "if" fullexpression "do" blockexpression
