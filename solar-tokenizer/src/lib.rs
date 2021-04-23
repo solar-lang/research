@@ -1,5 +1,47 @@
 use logos::Logos;
 
+#[cfg(test)]
+mod tests {
+    use super::Token;
+    use super::Token::*;
+    use logos::Logos;
+
+    fn tokenize(input: &str) -> Vec<Token> {
+        Token::lexer(input).filter(|t| t != &Whitespace).collect()
+    }
+
+    #[test]
+    fn tokens1() {
+        let input = "hello world";
+        let expected = [Identifier("hello"), Identifier("world")];
+
+        assert_eq!(&tokenize(input), &expected);
+    }
+
+    #[test]
+    fn tokens2() {
+        let input = "pub func map(list List T, fn T -> R) -> List R";
+        let expected = [
+            Pub, Func, Identifier("map"), ParenOpen,
+            Identifier("list"),
+            Identifier("List"),
+            Identifier("T"),
+            Comma,
+            Identifier("fn"),
+            Identifier("T"),
+            ArrowSlim,
+            Identifier("R"),
+            ParenClosing,
+            ArrowSlim,
+            Identifier("List"),
+            Identifier("R"),
+
+        ];
+
+        assert_eq!(&tokenize(input), &expected);
+    }
+}
+
 #[derive(Logos, Debug, PartialEq, Eq)]
 pub enum Token<'a> {
     #[token("pub")]
@@ -66,7 +108,7 @@ pub enum Token<'a> {
     Mut,
 
     // must match ([a-z][A-Z])+([a-z][A-Z][0-9])*(_([a-z][A-Z][0-9])*)*
-    #[regex(r"[a-zA-Z][a-zA-Z0-9_]+")]
+    #[regex(r"[a-zA-Z][a-zA-Z0-9_]*")]
     Identifier(&'a str),
 
 
