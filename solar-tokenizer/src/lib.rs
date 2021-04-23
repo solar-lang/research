@@ -4,16 +4,25 @@ use logos::Logos;
 mod tests {
     use super::Token;
     use super::Token::*;
-    use logos::Logos;
 
     fn tokenize(input: &str) -> Vec<Token> {
-        Token::lexer(input).filter(|t| t != &Whitespace).collect()
+        super::tokenize(input).collect()
     }
 
     #[test]
     fn tokens1() {
         let input = "hello world";
         let expected = [Identifier("hello"), Identifier("world")];
+
+        assert_eq!(&tokenize(input), &expected);
+    }
+
+    #[test]
+    fn tokens3() {
+        let input = "# this is a comment \n map f";
+        let expected = [
+            Comment("# this is a comment "),
+            Identifier("map"), Identifier("f")];
 
         assert_eq!(&tokenize(input), &expected);
     }
@@ -44,6 +53,9 @@ mod tests {
 
 #[derive(Logos, Debug, PartialEq, Eq)]
 pub enum Token<'a> {
+    #[regex(r"#[^\n]*")]
+    Comment(&'a str),
+
     #[token("pub")]
     Pub,
 
@@ -234,4 +246,18 @@ pub enum Token<'a> {
     // whitespace we wish to skip.
     #[regex(r"[ \t\n\f]+", logos::skip)]
     Whitespace,
+}
+
+/// tokenize input while preserving whitespace
+pub fn tokenize_with_whitespace(input: &str) -> impl Iterator<Item=Token> {
+    Token::lexer(input)
+}
+
+/// tokenize all of the input while ignoring whitespace characters
+pub fn tokenize(input: &str) -> impl Iterator<Item=Token> {
+    tokenize_with_whitespace(input).filter(not_whitespace)
+}
+
+fn not_whitespace(t: &Token) -> bool {
+    t != &Token::Whitespace
 }
