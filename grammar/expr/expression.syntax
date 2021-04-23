@@ -64,7 +64,7 @@ arrayguard
 
 objectguard
     - fullidentifier
-    - ((identifier "=")? literal)*
+    - (identifier "=" literal)*
 
 tupleguard
     - "("

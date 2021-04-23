@@ -5,6 +5,18 @@ pub enum Token<'a> {
     #[token("pub")]
     Pub,
 
+    #[token("when")]
+    When,
+
+    #[token("is")]
+    Is,
+
+    #[token("else")]
+    Else,
+
+    #[token("then")]
+    Then,
+
     #[token("func")]
     Func,
 
@@ -168,6 +180,12 @@ pub enum Token<'a> {
 
     #[regex(r"0b[0-1]+")]
     IntBin(&'a str),
+
+    // Strings are a little harder, since they may be interpolated
+    // TODO string interpolation
+    // TODO for now strings are just ' because the regex would become a mess to write
+    #[regex(r"'[^']*'")]
+    String(&'a str),
 
     #[error]
     // We can also use this variant to define whitespace,
