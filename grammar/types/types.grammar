@@ -1,3 +1,4 @@
+-- vim: set syntax=haskell:
 Type
     - TypeOrTuple
     - ( "->" Type )?    -- for functions

@@ -12,6 +12,7 @@ keyword =
     / "return"
     / "loop"
     / "break"
+    / "next"
     / "set"
     / "func"
     / "function"
