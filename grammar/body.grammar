@@ -1,10 +1,17 @@
+-- vim: set syntax=haskell:
 body
 - import*
-- functionOrType*
+- functionOrTypeOrTest*
 
 functionOrType
 / function
 / typeDecl
+// test
+
+test
+- "test"
+- string
+- blockexpression
 
 function
 -   genericStub?

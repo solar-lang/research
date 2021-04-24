@@ -63,6 +63,9 @@ pub enum Token<'a> {
     #[token("pub")]
     Pub(&'a str),
 
+    #[token("test")]
+    Test(&'a str),
+
     #[token("when")]
     When(&'a str),
 

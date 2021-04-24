@@ -1,11 +1,17 @@
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
+mod ast;
+mod error;
+pub use error::Error;
+pub use error::Res;
+pub use ast::Ast;
+
+use solar_tokenizer::Token;
+
+pub fn parse<'a>(tokens: impl Iterator<Item=Token<'a>>) -> Res<'a, Ast<'a>> {
+    use solar_tokenizer::only_relevant;
+
+    let tokens: Vec<Token> = only_relevant(tokens).collect();
+
+    Ast::parse(&tokens)
 }
 
-pub parse(stream: impl Iterator<Item=Token>) -> Ast {
 
-}
