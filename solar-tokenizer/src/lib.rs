@@ -252,14 +252,16 @@ pub enum Token<'a> {
     Whitespace,
 }
 
-/// tokenize input while preserving whitespace
-pub fn tokenize_with_whitespace(input: &str) -> impl Iterator<Item = Token> {
+/// tokenize input string format of solar language
+pub fn tokenize(input: &str) -> impl Iterator<Item = Token> {
     Token::lexer(input)
 }
 
-/// tokenize all of the input while ignoring whitespace characters
-pub fn tokenize(input: &str) -> impl Iterator<Item = Token> {
-    tokenize_with_whitespace(input).filter(not_whitespace).filter(not_comment)
+/// filter out all syntactically irrelevant tokens
+pub fn only_relevant<'a>(
+    tokens: impl Iterator<Item = Token<'a>>,
+) -> impl Iterator<Item = Token<'a>> {
+    tokens.filter(not_whitespace).filter(not_comment)
 }
 
 fn not_whitespace(t: &Token) -> bool {
