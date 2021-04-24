@@ -1,2 +1,2 @@
 
-superseeded by `solar-parser`
+superseeded by `solar-tokenizer + solar-ast`
