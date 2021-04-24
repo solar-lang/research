@@ -6,7 +6,7 @@ mod tests {
     use super::Token::*;
 
     fn tokenize(input: &str) -> Vec<Token> {
-        super::tokenize(input).collect()
+        super::only_relevant(super::tokenize(input)).collect()
     }
 
     #[test]
