@@ -19,7 +19,7 @@ function
 -   "func"
 -   identifier
 -   "("
--   type ** ","
+-   (identifier type ) ** ","
 -   ")"
 -   ( "->" type )?
 -   "="
@@ -34,6 +34,12 @@ where
 - "where"
 - whereclause+
 
+-- TODO extend
+-- this is possible:
+-- C = mul(A, B)
+--
+-- this is not yet:
+-- somef(List A, fn A -> B) -> List N
 whereclause
 - identifier
 - "="
@@ -55,7 +61,7 @@ genericArgsDecl
 
 enumOrStructFields
 / enumField*
-/ structField
+/ structField*
 
 enumField
 -   "|"
