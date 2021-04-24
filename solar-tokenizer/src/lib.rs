@@ -22,7 +22,9 @@ mod tests {
         let input = "# this is a comment \n map f";
         let expected = [
             Comment("# this is a comment "),
-            Identifier("map"), Identifier("f")];
+            Identifier("map"),
+            Identifier("f"),
+        ];
 
         assert_eq!(&tokenize(input), &expected);
     }
@@ -31,20 +33,22 @@ mod tests {
     fn tokens2() {
         let input = "pub func map(list List T, fn T -> R) -> List R";
         let expected = [
-            Pub, Func, Identifier("map"), ParenOpen,
+            Pub("pub"),
+            Func("func"),
+            Identifier("map"),
+            ParenOpen("("),
             Identifier("list"),
             Identifier("List"),
             Identifier("T"),
-            Comma,
+            Comma(","),
             Identifier("fn"),
             Identifier("T"),
-            ArrowSlim,
+            ArrowSlim("->"),
             Identifier("R"),
-            ParenClosing,
-            ArrowSlim,
+            ParenClosing(")"),
+            ArrowSlim("->"),
             Identifier("List"),
             Identifier("R"),
-
         ];
 
         assert_eq!(&tokenize(input), &expected);
@@ -57,168 +61,168 @@ pub enum Token<'a> {
     Comment(&'a str),
 
     #[token("pub")]
-    Pub,
+    Pub(&'a str),
 
     #[token("when")]
-    When,
+    When(&'a str),
 
     #[token("is")]
-    Is,
+    Is(&'a str),
 
     #[token("else")]
-    Else,
+    Else(&'a str),
 
     #[token("then")]
-    Then,
+    Then(&'a str),
 
     #[token("func")]
-    Func,
+    Func(&'a str),
 
     #[token("type")]
-    Type,
+    Type(&'a str),
 
     #[token("use")]
-    Use,
+    Use(&'a str),
 
     #[token("..")]
-    Spread,
+    Spread(&'a str),
 
     #[token("let")]
-    Let,
+    Let(&'a str),
 
     #[token("return")]
-    Return,
+    Return(&'a str),
 
     #[token("loop")]
-    Loop,
+    Loop(&'a str),
 
     #[token("break")]
-    Break,
+    Break(&'a str),
 
     #[token("next")]
-    Next,
+    Next(&'a str),
 
     #[token("if")]
-    If,
+    If(&'a str),
 
     #[token("do")]
-    Do,
+    Do(&'a str),
 
     #[token("for")]
-    For,
+    For(&'a str),
 
     #[token("in")]
-    In,
+    In(&'a str),
 
     #[token("generic")]
-    Generic,
+    Generic(&'a str),
 
     #[token("where")]
-    Where,
+    Where(&'a str),
 
     #[token("mut")]
-    Mut,
+    Mut(&'a str),
 
-    // must match ([a-z][A-Z])+([a-z][A-Z][0-9])*(_([a-z][A-Z][0-9])*)*
+    // Variables, types and directories must match ([a-z][A-Z])+([a-z][A-Z][0-9])*(_([a-z][A-Z][0-9])*)*
+    // Though it's possoble to have identifiers coming from `c`
     #[regex(r"[a-zA-Z][a-zA-Z0-9_]*")]
     Identifier(&'a str),
 
-
     #[token("(")]
-    ParenOpen,
+    ParenOpen(&'a str),
 
     #[token(")")]
-    ParenClosing,
+    ParenClosing(&'a str),
 
     #[token("{")]
-    CurlyOpen,
+    CurlyOpen(&'a str),
 
     #[token("}")]
-    CurlyClosing,
+    CurlyClosing(&'a str),
 
     #[token("[")]
-    BracketOpen,
+    BracketOpen(&'a str),
 
     #[token("]")]
-    BracketClosing,
+    BracketClosing(&'a str),
 
     #[token(">=")]
-    GreaterOrEqual,
+    GreaterOrEqual(&'a str),
 
     #[token("<=")]
-    SmallerOrEqual,
+    SmallerOrEqual(&'a str),
 
     #[token("==")]
-    Equal,
+    Equal(&'a str),
 
     #[token("++")]
-    Concat,
+    Concat(&'a str),
 
     #[token("+")]
-    Plus,
+    Plus(&'a str),
 
     #[token("-")]
-    Minus,
+    Minus(&'a str),
 
     #[token("*")]
-    Multiply,
+    Multiply(&'a str),
 
     #[token("/")]
-    Divide,
+    Divide(&'a str),
 
     #[token("^")]
-    Power,
+    Power(&'a str),
 
     #[token("√")]
-    Sqrt,
+    Sqrt(&'a str),
 
     #[token("%")]
-    Modulo,
+    Modulo(&'a str),
 
     #[token("&")]
-    Amp,
+    Amp(&'a str),
 
     #[token("and")]
-    And,
+    And(&'a str),
 
     #[token("or")]
-    Or,
+    Or(&'a str),
 
     #[token("|")]
-    Abs,
+    Abs(&'a str),
 
     #[token("!")]
-    Not,
+    Not(&'a str),
 
     #[token("=")]
-    Assign,
+    Assign(&'a str),
 
     #[token(">")]
-    Greater,
+    Greater(&'a str),
 
     #[token("<")]
-    Smaller,
+    Smaller(&'a str),
 
     #[token("->")]
-    ArrowSlim,
+    ArrowSlim(&'a str),
 
     #[token("=>")]
-    ArrowThick,
+    ArrowThick(&'a str),
 
     #[token(".")]
-    Period,
+    Period(&'a str),
 
     #[token(",")]
-    Comma,
+    Comma(&'a str),
 
     #[token(":")]
-    Colon,
+    Colon(&'a str),
 
     #[token(";")]
-    SemiColon,
+    SemiColon(&'a str),
 
     #[token("lib")]
-    Lib,
+    Lib(&'a str),
 
     #[regex(r"\d+\.\d*(e-?\d+)?")]
     Float(&'a str),
@@ -242,22 +246,29 @@ pub enum Token<'a> {
     String(&'a str),
 
     #[error]
-    // We can also use this variant to define whitespace,
+    // We can also use this variant to define whitespace(&'a str),
     // whitespace we wish to skip.
     #[regex(r"[ \t\n\f]+", logos::skip)]
     Whitespace,
 }
 
 /// tokenize input while preserving whitespace
-pub fn tokenize_with_whitespace(input: &str) -> impl Iterator<Item=Token> {
+pub fn tokenize_with_whitespace(input: &str) -> impl Iterator<Item = Token> {
     Token::lexer(input)
 }
 
 /// tokenize all of the input while ignoring whitespace characters
-pub fn tokenize(input: &str) -> impl Iterator<Item=Token> {
-    tokenize_with_whitespace(input).filter(not_whitespace)
+pub fn tokenize(input: &str) -> impl Iterator<Item = Token> {
+    tokenize_with_whitespace(input).filter(not_whitespace).filter(not_comment)
 }
 
 fn not_whitespace(t: &Token) -> bool {
     t != &Token::Whitespace
+}
+
+fn not_comment(t: &Token) -> bool {
+    match t {
+        &Token::Comment(_) => false,
+        _ => true,
+    }
 }
