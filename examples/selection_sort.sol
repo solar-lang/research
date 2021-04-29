@@ -1,5 +1,5 @@
 
-function selectionSort(list List) -> List = match list
+function selectionSort(list List) -> List = when list
     is [] then []
     or [a] then [a]
     or [a, ..rest] then
@@ -11,7 +11,7 @@ function selectionSort(list List) -> List = match list
 
 
 -- Note: this is bullshit:
-function selectionSort(list List) -> List = match list
+function selectionSort(list List) -> List = when list
     is [] then []
     or [a] then [a]
     or [a, ..rest] then {

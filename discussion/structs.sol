@@ -59,7 +59,7 @@ let x = [a, b, Tree left:x, right:y]
 let x = [a, b, Tree left:x right:y]
 
 -- BUT
--- can't use <ident>:<expr>, because expression matches list of literals
+-- can't use <ident>:<expr>, because expression whenes list of literals
                     (e.g. sin x y)
                     function: sin
                     args: [ x, y ]

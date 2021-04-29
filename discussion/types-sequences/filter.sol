@@ -15,10 +15,10 @@ generic T, I
     where
     next(T) -> Option [T, I]
 function next(f Filter (T, I)) -> Option [Fiter (T,I), I] =
-    match f:seq:next
+    when f:seq:next
     is [_, None] then None
     is [seq, Some value] then (
-        match (f:filter) value
+        when (f:filter) value
         is true then Some [filter seq, f:filter,value]
         else filter seq (f:filter) : next
     )
