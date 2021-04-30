@@ -1,12 +1,20 @@
 use solar_tokenizer::Token;
+use identifier::Identifier;
 
-/// Tree representation of the syntax of a solar file
-pub struct Ast<'a> {
-    pub imports: Vec<Import<'a>>,
-    pub functions_and_types_and_tests: Vec<FunctionOrTypeOrTest<'a>>,
+pub struct Import<'a> {
+    pub tokens: &'a [Token<'a>],
+    pub path: Identifier<'a>,
+    pub select: Option<ImportSelector<'a>>,
 }
 
-pub struct Import<'a>;
+pub enum ImportSelector<'a> {
+    // ..
+    Everything,
+    // .xyz
+    Package(Identifier<'a>),
+    Packages(Vec<Identifier<'a>>),
+}
+
 
 pub enum FunctionOrTypeOrTest<'a> {
     Function(Function<'a>),

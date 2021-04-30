@@ -1,21 +1,18 @@
 -- vim: set syntax=haskell:
 imports
-    import *
+    ("use" import) *
 
 import
--   "use"
--   single
-
-selector
-/   ".."
-/   ( "." single )
-/   ( "." multi  )
-
-single
 - identifier
 - selector?
 
+selector
+/   ".."
+/   ( "." import )
+/   ( "." multi  )
+
 multi
 - "("
-- single*
+- import*
 - ")"
+
