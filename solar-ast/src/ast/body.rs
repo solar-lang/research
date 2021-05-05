@@ -1,5 +1,6 @@
+use crate::ast::{type_signature::TypeSignature, identifier::{FullIdentifier, Identifier } };
+
 use solar_tokenizer::Token;
-use identifier::Identifier;
 
 pub struct Import<'a> {
     pub tokens: &'a [Token<'a>],
@@ -27,8 +28,8 @@ pub struct Function<'a> {
     pub generic_stub: Option<GenericStub<'a>>,
     pub public: bool,
     pub name: Identifier<'a>,
-    pub parameters: Vec<(Identifier<'a>, Type<'a>)>,
-    pub return_type: Type<'a>,
+    pub parameters: Vec<(Identifier<'a>, TypeSignature<'a>)>,
+    pub return_type: TypeSignature<'a>,
     pub instructions: Expression<'a>,
 }
 
@@ -61,7 +62,7 @@ pub struct TypeDecl<'a> {
     pub tokens: &'a [Token<'a>],
     pub name: Identifier<'a>,
     pub generic_args_decl: Option<GenericArgsDecl<'a>>,
-    pub fields: EnumOrStructFields,
+    pub fields: EnumOrStructFields<'a>,
 }
 
 pub struct GenericArgsDecl<'a> {
@@ -77,7 +78,7 @@ pub enum EnumOrStructFields<'a> {
 pub struct EnumField<'a> {
     pub tokens: &'a [Token<'a>],
     pub name: Identifier<'a>,
-    pub value_type: Option<Type<'a>>,
+    pub value_type: Option<TypeSignature<'a>>,
 }
 
 pub struct StructField<'a> {
@@ -85,5 +86,5 @@ pub struct StructField<'a> {
     pub public: bool,
     pub mutable: bool,
     pub name: Identifier<'a>,
-    pub value_type: Type<'a>,
+    pub value_type: TypeSignature<'a>,
 }
