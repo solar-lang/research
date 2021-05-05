@@ -1,23 +1,23 @@
 -- vim: set syntax=haskell:
-Type
-    - TypeOrTuple
-    - ( "->" Type )?    -- for functions
+TypeSignature
+    - TypeKind
+    - ( "->" TypeSignature )?    -- for functions
 
-TypeOrTuple
+TypeKind
     / DirectType
-    / Tuple
+    / TupleType
     / VectorType
 
 DirectType
     - fullidentifier    -- e.g. std.List
-    - Type?             -- e.g. List String / Map (String, Json)
+    - TypeSignature?             -- e.g. List String / Map (String, Json)
 
 TupleType   -- musn't in fact be a tuple type,
     - "("
-    - Type ** ","
+    - TypeSignature ** ","
     - ")"
 
 VectorType
     - "["
     - "]"
-    - Type
+    - TypeSignature
