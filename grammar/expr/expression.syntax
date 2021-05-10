@@ -57,6 +57,9 @@ value
     -- Might be included. Complicates things. Hard to read for beginners
     -- / "$" fullexpression
 
+array
+-   "[",
+
 arrayguard
     - "[" -- while parenthesis are discouraged when possible, this helps distinct things visually
     - (whenguard ** ",")
@@ -95,20 +98,22 @@ when
     - ("else" fullexpression)?
 
 closure
-    - "("
-    - functionarguments ** ","
-    - ")"
+    - closureargs
     - "=>"
     - expression
+
+closureargs
+    / "(" (identifier ** ",") ")"
+    / identifier
 
 -- sin 3.14
 -- call "Sally" "+1489732567890" (Message from="david" text="Hello world")
 -- call person="Sally" number="+012345678" message=(Message from"david" text="Hello world")
 functioncall
-    - identifier
+    - fullIdentifier
     - functioncallarg*
 
 functioncallarg
-    - (identifier "=")?
+    - (identifier "=")
     - value
 

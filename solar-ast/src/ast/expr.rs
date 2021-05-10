@@ -1,4 +1,5 @@
-use crate::ast::identifier::FullIdentifier;
+use crate::ast::expr::when::When;
+use crate::ast::identifier::{Identifier, FullIdentifier };
 use solar_tokenizer::Token;
 
 /// Expressions
@@ -20,7 +21,7 @@ pub enum FullExpression<'a> {
     Pipe(BFE<'a>, BFE<'a>),
     // direct field access
     Dot(BFE<'a>, BFE<'a>),
-    Expression(Expression<'a>),
+    Expression(Box<Expression<'a>>),
 }
 
 //  pub tokens: &'a [Token<'a>],
@@ -41,6 +42,23 @@ pub enum Value<'a> {
     BlockExpression(BlockExpression<'a>),
 }
 
+pub struct Array<'a> {
+    pub tokens: &'a[Token<'a>],
+    pub values: Vec<FullExpression<'a>>,
+}
+
+pub struct FunctionCall<'a> {
+    pub tokens: &'a[Token<'a>],
+    // Note: may as well be a variable
+    pub function_name: FullIdentifier<'a>,
+    pub args: Vec<FunctionArg<'a>>,
+}
+
+pub struct FunctionArg<'a> {
+    pub name: Identifier<'a>,
+    pub value: Value<'a>
+}
+
 pub enum Literal {
     Bool(bool),
     Int(i64),
@@ -51,9 +69,6 @@ pub enum Literal {
 // NOTE: Quite complicated, expect for iterative changes
 mod when {
     use super::*;
-    use crate::ast::identifier::*;
-    // use solar_tokenizer::Token;
-    // use crate::ast::identifier::{Identifier, FullIdentifier };
 
     pub enum ParenGuard<'a> {
         Bool(bool),
@@ -99,4 +114,15 @@ mod when {
         is: Guard<'a>,
         then: FullExpression<'a>,
     }
+}
+
+pub struct Closure<'a> {
+    pub tokens: &'a [Token<'a>],
+    pub arguments: ClosureArgs<'a>,
+    pub body: Box<Expression<'a>>,
+}
+
+pub enum ClosureArgs<'a> {
+    Single(Identifier<'a>),
+    Multiple(Identifier<'a>),
 }
