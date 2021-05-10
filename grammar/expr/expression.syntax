@@ -37,6 +37,7 @@ expression
     / functioncall
     / value
 
+-- TODO include string interpolation
 literal
     / bool
     / int
@@ -62,25 +63,35 @@ arrayguard
     - (identifer "..")?
     - "]"
 
+
 objectguard
     - fullidentifier
-    - (identifier "=" literal)*
+    - (identifier "=" whenguard )*
 
 tupleguard
     - "("
     - whenguard ** ","
     - ")"
 
+-- literals or guard in parenthesis
+parenwhenguard
+    / literal -- variable binding
+    / bool
+    / int
+    / float
+    / string
+    /   "(" whenguard ")"
+
 whenguard
     / literal
     / objectguard
     / arrayguard
     / tupleguard
-    / identifer
+    / identifer -- variable binding
 
 when
     - "when" fullexpression
-    - "is" whenguard "then" fullexpression
+    - ("is" whenguard "then" fullexpression)*
     - ("else" fullexpression)?
 
 closure
