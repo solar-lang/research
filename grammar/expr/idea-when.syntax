@@ -1,5 +1,16 @@
 -- when is nicer than match, since when is really nice to type
 
+-- TODO this is not taken, because:
+
+when abs == false then a else b
+
+-- is much worse to read than
+
+when abc is false then a else b
+
+-- and by not using a shorthand bool, we're avoiding negations
+-- which often simplifies reasoning what an expression does
+
 when
     -- the default when
     / when-classic
