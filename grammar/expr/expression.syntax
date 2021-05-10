@@ -59,6 +59,8 @@ value
 
 array
 -   "[",
+-   fullexpression ** ","
+-   "]",
 
 arrayguard
     - "[" -- while parenthesis are discouraged when possible, this helps distinct things visually
