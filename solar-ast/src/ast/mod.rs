@@ -1,6 +1,7 @@
 pub mod type_signature;
 pub mod identifier;
 pub mod body;
+pub mod expr;
 use body::{Import, FunctionOrTypeOrTest};
 use solar_tokenizer::Token;
 // use solar_tokenizer::Token;

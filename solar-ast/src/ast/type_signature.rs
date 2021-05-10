@@ -4,7 +4,7 @@ use crate::ast::identifier::FullIdentifier;
 pub struct TypeSignature<'a> {
     pub tokens: &'a [Token<'a>],
     pub type_kind: TypeKind<'a>,
-    pub return_type: Option<TypeSignature<'a>>,
+    pub return_type: Option<Box<TypeSignature<'a>>>,
 }
 
 pub enum TypeKind<'a> {
@@ -17,7 +17,7 @@ pub struct DirectType<'a> {
     pub tokens: &'a [Token<'a>],
     // may contain (relative) path to type
     pub full_identifier: FullIdentifier<'a>,
-    pub generic_argument: Option<TypeSignature<'a>>,
+    pub generic_argument: Option<Box<TypeSignature<'a>>>,
 }
 
 pub struct TupleType<'a> {
@@ -29,5 +29,5 @@ pub struct TupleType<'a> {
 // Just the same as Vec <generic_argument>
 pub struct VectorType<'a> {
     pub tokens: &'a [Token<'a>],
-    pub generic_argument: TypeSignature<'a>,
+    pub generic_argument: Box<TypeSignature<'a>>,
 }
