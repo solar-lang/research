@@ -31,7 +31,7 @@ pub enum Expression<'a> {
 }
 
 pub enum Value<'a> {
-    Litaral(Literal),
+    Litaral(Literal<'a>),
     FullIdentifier(FullIdentifier<'a>),
     Closure(Closure<'a>),
     Array(Array<'a>),
@@ -59,12 +59,18 @@ pub struct FunctionArg<'a> {
     pub value: Value<'a>
 }
 
-pub enum Literal {
+pub enum Literal<'a> {
     Bool(bool),
     Int(i64),
     Float(f64),
-    String(String),
+    String(StringLiteral<'a>),
 }
+
+pub struct StringLiteral<'a> {
+    tokens: &'a [Token<'a>],
+    value: String
+}
+
 
 // NOTE: Quite complicated, expect for iterative changes
 mod when {
@@ -74,7 +80,7 @@ mod when {
         Bool(bool),
         Int(i64),
         Float(f64),
-        String(String),
+        String(StringLiteral<'a>),
         VariableBinding(Identifier<'a>),
         Paren(Guard<'a>),
     }
@@ -97,7 +103,7 @@ mod when {
     }
 
     pub enum Guard<'a> {
-        Literal(Literal),
+        Literal(Literal<'a>),
         ObjectGuard(ObjectGuard<'a>),
         ArrayGuard(ArrayGuard<'a>),
         TupleGuard(TupleGuard<'a>),
@@ -125,4 +131,24 @@ pub struct Closure<'a> {
 pub enum ClosureArgs<'a> {
     Single(Identifier<'a>),
     Multiple(Identifier<'a>),
+}
+
+pub struct BlockExpression<'a> {
+    pub tokens: &'a [Token<'a>],
+    pub parts: Vec<BlockExpressionPart<'a>>,
+}
+
+pub enum BlockExpressionPart<'a> {
+    Let {identifier: Identifier<'a>, expr: FullExpression<'a>},
+    Return(Option<FullExpression<'a>>),
+    Break,
+    Next,
+    Expression(FullExpression<'a>),
+    Lopp(BlockExpression<'a>),
+    If {condition: FullExpression<'a>, then: BlockExpression<'a>},
+    For{
+        variable: Identifier<'a>,
+        over: FullExpression<'a>,
+        body: BlockExpression<'a>,
+    }
 }

@@ -1,4 +1,4 @@
-use crate::ast::{type_signature::TypeSignature, identifier::{FullIdentifier, Identifier } };
+use crate::ast::{type_signature::TypeSignature, identifier::{FullIdentifier, Identifier }, expr::{StringLiteral, FullExpression as Expression } };
 
 use solar_tokenizer::Token;
 
