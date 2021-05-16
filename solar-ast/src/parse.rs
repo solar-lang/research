@@ -5,9 +5,9 @@ use crate::Error;
 pub type Tokens<'a> = &'a [Token<'a>];
 pub type Res<'a, T> = IResult<Tokens<'a>, T, Error<'a>>;
 
-pub trait Parse
+pub trait Parse<'a>
 where
     Self: Sized,
 {
-    fn parse<'a>(tokens: Tokens<'a>) -> Res<'a, Self>;
+    fn parse(tokens: Tokens<'a>) -> Res<'a, Self>;
 }

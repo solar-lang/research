@@ -4,7 +4,7 @@ mod error;
 pub use error::{Error, TokenError};
 pub use ast::Ast;
 mod parse;
-pub use parse::{Tokens, Parse};
+pub use parse::{Tokens, Parse, Res};
 
 
 use solar_tokenizer::Token;
