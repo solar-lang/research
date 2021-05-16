@@ -32,7 +32,7 @@ impl<'a> Parse<'a> for Identifier<'a> {
         }
 
         match &tokens[0] {
-            Token::Identifier(value) => Ok((&tokens[1..], Identifier {tokens: &tokens[..1], value})),
+            Token::Identifier(value) if !is_keyword(*value) => Ok((&tokens[1..], Identifier {tokens: &tokens[..1], value})),
             cause => Err(TokenError::at_token(cause).expected(EXPECTED).recoverable().into()),
         }
     }
