@@ -1,6 +1,7 @@
 use crate::ast::{type_signature::TypeSignature, identifier::{FullIdentifier, Identifier }, expr::{StringLiteral, FullExpression as Expression } };
 
 use solar_tokenizer::Token;
+use crate::Parse;
 
 pub struct Import<'a> {
     pub tokens: &'a [Token<'a>],

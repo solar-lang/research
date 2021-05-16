@@ -8,3 +8,4 @@ edition = "2018"
 
 [dependencies]
 solar-tokenizer = { path = "../solar-tokenizer" }
+nom = "6.1.2"                # A byte-oriented, zero-copy, parser combinators library

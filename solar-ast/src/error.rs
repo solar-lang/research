@@ -1,7 +1,25 @@
 use solar_tokenizer::Token;
+use crate::Tokens;
+
+pub enum Error<'a> {
+    TokenError(TokenError<'a>),
+    NomError(nom::Err<nom::error::Error<Tokens<'a>>>)
+}
+
+impl<'a> From<nom::Err<nom::error::Error<Tokens<'a>>>> for Error<'a> {
+    fn from(e: nom::Err<nom::error::Error<Tokens<'a>>>) -> Self {
+        Error::NomError(e)
+    }
+}
+
+impl<'a> From<TokenError<'a>> for Error<'a> {
+    fn from(e: TokenError<'a>) -> Self {
+        Error::TokenError(e)
+    }
+}
 
 /// Error originated while parsing tokens into ast tree
-pub struct Error<'a> {
+pub struct TokenError<'a> {
     /// Token causing the error to arise
     pub cause: Token<'a>,
     /// Tokens that would have circumvented this error
@@ -11,9 +29,9 @@ pub struct Error<'a> {
     recoverable: bool,
 }
 
-impl<'a> Error<'a> {
+impl<'a> TokenError<'a> {
     pub fn at_token(cause: Token<'a>) -> Self {
-        Error {
+        TokenError {
             cause,
             expected: None,
             recoverable: false,
@@ -21,15 +39,12 @@ impl<'a> Error<'a> {
     }
 
     pub fn recoverable(self) -> Self {
-        Error { recoverable: true, ..self}
+        TokenError { recoverable: true, ..self}
     }
 
     pub fn expected(self, tokens: Vec<Token<'a>>) -> Self {
         // doesn't really makes sense, that expected field may already be filled
         assert_eq!(self.expected, None);
-        Error { expected: Some(tokens), ..self}
+        TokenError { expected: Some(tokens), ..self}
     }
 }
-
-/// Error type originating while parsing
-pub type Res<'a, T> = Result<(T, &'a[Token<'a>]), Error<'a>>;
