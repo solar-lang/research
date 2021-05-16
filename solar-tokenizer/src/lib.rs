@@ -55,7 +55,7 @@ mod tests {
     }
 }
 
-#[derive(Logos, Debug, PartialEq, Eq)]
+#[derive(Logos, Debug, PartialEq, Eq, Clone)]
 pub enum Token<'a> {
     #[regex(r"#[^\n]*")]
     Comment(&'a str),
