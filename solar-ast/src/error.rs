@@ -12,6 +12,15 @@ impl<'a> Into<nom::Err<Error<'a>>> for Error<'a> {
     }
 }
 
+
+impl<'a> Into<nom::Err<Error<'a>>> for TokenError<'a> {
+    fn into(self) -> nom::Err<Error<'a>> {
+        Error::TokenError(self).into()
+    }
+}
+
+
+#[derive(Debug)]
 pub enum Error<'a> {
     TokenError(TokenError<'a>),
     NomError(nom::error::Error<Tokens<'a>>)
@@ -29,10 +38,11 @@ impl<'a> From<TokenError<'a>> for Error<'a> {
     }
 }
 
+#[derive(Debug)]
 /// Error originated while parsing tokens into ast tree
 pub struct TokenError<'a> {
     /// Token causing the error to arise. No token means End of input
-    pub cause: Option<Token<'a>>,
+    pub cause: Option<&'a Token<'a>>,
     /// Tokens that would have circumvented this error
     pub expected: Option<Tokens<'a>>,
     /// Wether parsing can recover after this branch of decisions failed.
@@ -49,7 +59,7 @@ impl<'a> TokenError<'a> {
         }
     }
 
-    pub fn at_token(cause: Token<'a>) -> Self {
+    pub fn at_token(cause: &'a Token<'a>) -> Self {
         TokenError {
             cause: Some(cause),
             expected: None,

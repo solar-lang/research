@@ -9,12 +9,13 @@ pub use parse::{Tokens, Parse, Res};
 
 use solar_tokenizer::Token;
 
-pub fn parse<'a>(tokens: impl Iterator<Item=Token<'a>>) -> nom::IResult<Tokens<'a>, Ast> {
+pub fn parse<'a>(tokens: impl Iterator<Item=Token<'a>>) -> nom::IResult<Tokens<'a>, Ast<'a>> {
     use solar_tokenizer::only_relevant;
 
     let tokens: Vec<Token> = only_relevant(tokens).collect();
 
-    Ast::parse(&tokens)
+    //Ast::parse(&tokens)
+    unimplemented!()
 }
 
 
