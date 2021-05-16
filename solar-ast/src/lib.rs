@@ -1,5 +1,7 @@
+mod parse;
 mod ast;
 mod error;
+pub use parse::Parse;
 pub use error::Error;
 pub use error::Res;
 pub use ast::Ast;
