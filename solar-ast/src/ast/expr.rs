@@ -24,7 +24,7 @@ pub enum FullExpression<'a> {
     Expression(Box<Expression<'a>>),
 }
 
-//  pub tokens: &'a [Token<'a>],
+//  pub span: &'a str,
 pub enum Expression<'a> {
     FunctionCall(FunctionCall<'a>),
     Value(Value<'a>),
@@ -43,12 +43,12 @@ pub enum Value<'a> {
 }
 
 pub struct Array<'a> {
-    pub tokens: &'a[Token<'a>],
+    pub span: &'a[Token<'a>],
     pub values: Vec<FullExpression<'a>>,
 }
 
 pub struct FunctionCall<'a> {
-    pub tokens: &'a[Token<'a>],
+    pub span: &'a[Token<'a>],
     // Note: may as well be a variable
     pub function_name: FullIdentifier<'a>,
     pub args: Vec<FunctionArg<'a>>,
@@ -67,7 +67,7 @@ pub enum Literal<'a> {
 }
 
 pub struct StringLiteral<'a> {
-    tokens: &'a [Token<'a>],
+    span: &'a str,
     value: String
 }
 
@@ -86,19 +86,19 @@ mod when {
     }
 
     pub struct ArrayGuard<'a> {
-        pub tokens: &'a [Token<'a>],
+        pub span: &'a str,
         pub subguards: Vec<Guard<'a>>,
         pub rest: Option<Identifier<'a>>,
     }
 
     pub struct ObjectGuard<'a> {
-        pub tokens: &'a [Token<'a>],
+        pub span: &'a str,
         pub struct_identifier: FullIdentifier<'a>,
         pub fields: Vec<(Identifier<'a>, ParenGuard<'a>)>,
     }
 
     pub struct TupleGuard<'a> {
-        pub tokens: &'a [Token<'a>],
+        pub span: &'a str,
         pub values: Vec<Guard<'a>>,
     }
 
@@ -111,7 +111,7 @@ mod when {
     }
 
     pub struct When<'a> {
-        tokens: &'a [Token<'a>],
+        span: &'a str,
         branches: Vec<Branch<'a>>,
         else_clause: Option<FullExpression<'a>>,
     }
@@ -123,7 +123,7 @@ mod when {
 }
 
 pub struct Closure<'a> {
-    pub tokens: &'a [Token<'a>],
+    pub span: &'a str,
     pub arguments: ClosureArgs<'a>,
     pub body: Box<Expression<'a>>,
 }
@@ -134,7 +134,7 @@ pub enum ClosureArgs<'a> {
 }
 
 pub struct BlockExpression<'a> {
-    pub tokens: &'a [Token<'a>],
+    pub span: &'a str,
     pub parts: Vec<BlockExpressionPart<'a>>,
 }
 

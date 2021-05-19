@@ -1,17 +1,28 @@
-use core::str;
-
-use solar_tokenizer::Token;
-use crate::{Error, Parse, Res, TokenError, Tokens};
+use crate::{parse::*, util::from_to};
 
 pub struct FullIdentifier<'a> {
-    pub tokens: &'a [Token<'a>],
+    pub span: &'a str,
     pub value: Vec<Identifier<'a>>,
 }
 
+impl<'a> Parse<'a> for FullIdentifier<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        use crate::ast::keywords::KeywordDot;
+        use nom::{multi::many0, sequence::preceded};
+
+        let (rest, first) = Identifier::parse(input)?;
+        let (rest, path) = many0(preceded(KeywordDot::parse_ws, Identifier::parse_ws))(rest)?;
+        let span = unsafe { from_to(input, rest) };
+
+        let value = std::iter::once(first).chain(path.into_iter()).collect();
+
+        Ok((rest, FullIdentifier {span, value}))
+    }
+}
 
 #[derive(Debug)]
 pub struct Identifier<'a> {
-    pub tokens: &'a [Token<'a>],
+    pub span: &'a str,
     pub value: &'a str,
 }
 
@@ -21,32 +32,44 @@ impl<'a> PartialEq<&str> for Identifier<'a> {
     }
 }
 
+fn isalpha(c: char) -> bool {
+    c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z'
+}
+
+fn isnumber(c: char) -> bool {
+    c >= '0' && c <= '9'
+}
+
 impl<'a> Parse<'a> for Identifier<'a> {
-    fn parse(tokens: Tokens<'a>) -> nom::IResult<Tokens<'a>, Self, Error> {
-        const EXPECTED: Tokens<'static> = &[Token::Identifier("some_identifier")];
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        use nom::bytes::complete::{take_while, take_while1};
+        use nom::combinator::recognize;
+        use nom::sequence::pair;
 
-        if tokens.len() == 0{
-            return Err(
-                nom::Err::Error(Error::TokenError(TokenError::end_of_input().expected(EXPECTED).recoverable()))
-            );
-        }
+        let firstpart = take_while1(isalpha);
+        let secondpart = take_while(|c| isalpha(c) || isnumber(c) || c == '_');
+        let (rest, value) = recognize(pair(firstpart, secondpart))(input)?;
 
-        match &tokens[0] {
-            Token::Identifier(value) if !is_keyword(*value) => Ok((&tokens[1..], Identifier {tokens: &tokens[..1], value})),
-            cause => Err(TokenError::at_token(cause).expected(EXPECTED).recoverable().into()),
-        }
+        // identifiers may not be keywords
+        if is_keyword(value) {}
+
+        // may not end with underscore
+        if value.ends_with("_") {}
+
+        // may not contain double underscores __.
+        if value.contains("__") {}
+
+        Ok((rest, Identifier { value, span: value }))
     }
 }
 
 pub fn is_keyword(word: &str) -> bool {
     [
         "lib", "in", "let", "and", "or", "when", "when", "is", "then", "else", "return", "loop",
-        "break", "next", "set", "func", "function", "use", "type", "for"
+        "break", "next", "set", "func", "function", "use", "type", "for",
     ]
     .contains(&word)
 }
-
-
 
 #[cfg(test)]
 mod tests {
@@ -65,12 +88,23 @@ mod tests {
 
     #[test]
     fn idents() {
-        let tokens = [Token::Identifier("hello"), Token::Abs("|")];
-        let res = Identifier::parse(&tokens);
+        let span = "hello.world 7";
+        let res = Identifier::parse(&span);
 
         assert!(res.is_ok());
         let res = res.unwrap();
-        assert_eq!(res.0.len(), 1);
-        assert_eq!(res.1, "hello");
+        assert_eq!(res.0, ".world 7");
+        assert_eq!(res.1.value, "hello");
+    }
+
+    #[test]
+    fn fullidents() {
+        let span = "hello.world 7";
+        let res = FullIdentifier::parse(&span);
+
+        assert!(res.is_ok());
+        let res = res.unwrap();
+        assert_eq!(res.0, " 7");
+        assert_eq!(res.1.span, "hello.world");
     }
 }

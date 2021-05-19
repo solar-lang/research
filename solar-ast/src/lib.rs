@@ -1,21 +1,21 @@
 mod ast;
-mod error;
+pub(crate) mod util;
 
-pub use error::{Error, TokenError};
+pub mod parse;
 pub use ast::Ast;
-mod parse;
-pub use parse::{Tokens, Parse, Res};
 
 
+
+/*
 use solar_tokenizer::Token;
-
-pub fn parse<'a>(tokens: impl Iterator<Item=Token<'a>>) -> nom::IResult<Tokens<'a>, Ast<'a>> {
+pub fn parse<'a>(span: impl Iterator<Item=Token<'a>>) -> nom::IResult<&'a str, Ast<'a>> {
     use solar_tokenizer::only_relevant;
 
-    let tokens: Vec<Token> = only_relevant(tokens).collect();
+    let span: Vec<Token> = only_relevant(span).collect();
 
-    //Ast::parse(&tokens)
+    //Ast::parse(&span)
     unimplemented!()
 }
 
 
+*/
