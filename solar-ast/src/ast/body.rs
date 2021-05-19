@@ -41,12 +41,12 @@ mod tests {
 
     #[test]
     fn imports() {
-        let input = "std.collections(hashmap vector util..)";
+        let input = "std.collections(hashmap vector util..)  ";
         let imports = Import::parse(input);
         assert!(imports.is_ok());
         let (rest, imports) = imports.unwrap();
-        assert_eq!(rest, "");
-        assert_eq!(imports.span, input);
+        assert_eq!(rest, "  ");
+        assert_eq!(imports.span, &input[..( input.len() -2 )]);
     }
 }
 
