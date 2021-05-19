@@ -9,7 +9,7 @@ import
 selector
 /   ".."
 /   ( "." import )
-/   ( "." multi  )
+/   multi
 
 multi
 - "("

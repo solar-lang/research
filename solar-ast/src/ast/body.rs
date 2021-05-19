@@ -4,6 +4,12 @@ use crate::parse::*;
 use crate::ast::*;
 use crate::util::*;
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct UseImport<'a> {
+    pub span: &'a str,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Import<'a> {
     pub span: &'a str,
     pub from: Identifier<'a>,
@@ -12,13 +18,42 @@ pub struct Import<'a> {
 
 impl<'a> Parse<'a> for Import<'a> {
     fn parse(input: &'a str) -> Res<'a, Self> {
-        todo!()
+        let (rest, from) = Identifier::parse(input)?;
+
+        match ImportSelector::parse_ws(rest) {
+            Ok((rest, select)) => {
+                let select = Some(Box::new(select));
+                let span = unsafe { from_to(input, rest) };
+
+                Ok((rest, Import {span, from, select}))
+            },
+            _ => {
+                let span = unsafe { from_to(input, rest) };
+                Ok((rest, Import { span, from, select: None}))
+            }
+        }
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn imports() {
+        let input = "std.collections(hashmap vector util..)";
+        let imports = Import::parse(input);
+        assert!(imports.is_ok());
+        let (rest, imports) = imports.unwrap();
+        assert_eq!(rest, "");
+        assert_eq!(imports.span, input);
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ImportSelector<'a> {
     // .. (spread)
-    Everything(&'a str),
+    Everything { span: &'a str },
     // .xyz
     Package(Import<'a>),
     Packages(Vec<Import<'a>>),
@@ -30,8 +65,8 @@ impl<'a> Parse<'a> for ImportSelector<'a> {
         use keywords::*;
 
         alt((
-            map(KeywordSpread::parse, IportSelector::Everything),
-            map(preceded(KeywordDot::parse_ws, Identifier::parse_ws ), ImportSelector::Package),
+            map(KeywordSpread::parse, |KeywordSpread {span}| ImportSelector::Everything {span}),
+            map(preceded(KeywordDot::parse_ws, Import::parse_ws ), ImportSelector::Package),
             map(delimited(KeywordParenOpen::parse, many1(Import::parse_ws), KeywordParenClose::parse_ws), ImportSelector::Packages),
                 ))(input)
     }

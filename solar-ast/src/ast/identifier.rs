@@ -1,5 +1,6 @@
 use crate::{parse::*, util::from_to};
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FullIdentifier<'a> {
     pub span: &'a str,
     pub value: Vec<Identifier<'a>>,
@@ -20,7 +21,7 @@ impl<'a> Parse<'a> for FullIdentifier<'a> {
     }
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Identifier<'a> {
     pub span: &'a str,
     pub value: &'a str,
