@@ -1,7 +1,7 @@
 use crate::ast::{type_signature::TypeSignature, identifier::{FullIdentifier, Identifier }, expr::{StringLiteral, FullExpression as Expression } };
 
-use solar_tokenizer::Token;
-use crate::Parse;
+use crate::parse::*;
+use crate::util::*;
 
 pub struct Import<'a> {
     pub span: &'a str,
