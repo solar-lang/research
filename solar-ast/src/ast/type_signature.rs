@@ -132,13 +132,140 @@ impl<'a> Parse<'a> for VectorType<'a> {
         use keywords::*;
         // parse []
         let (rest, _l) = BracketOpen::parse(input)?;
-        let (rest, _r) = BracketClose::parse_ws(input)?;
+        let (rest, _r) = BracketClose::parse_ws(rest)?;
 
-        let (rest, generic_argument) = TypeSignature::parse_ws(input)?;
+        let (rest, generic_argument) = TypeSignature::parse_ws(rest)?;
 
-        let span = unsafe{from_to(input, rest)};
+        let span = unsafe { from_to(input, rest) };
         let generic_argument = Box::new(generic_argument);
 
-        Ok((rest, VectorType{span, generic_argument}))
+        Ok((
+            rest,
+            VectorType {
+                span,
+                generic_argument,
+            },
+        ))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn types0() {
+        let input = "std.List";
+        let res = TypeSignature::parse(input);
+        assert!(res.is_ok());
+        assert_eq!(res.unwrap().1.span, input);
+    }
+
+    #[test]
+    fn types1() {
+        let input = "std.List String";
+        let res = TypeSignature::parse(input);
+        assert!(res.is_ok());
+        assert_eq!(res.unwrap().1.span, input);
+    }
+
+    #[test]
+    fn types2() {
+        let input = "Map (String, Json)";
+        let res = TypeSignature::parse(input);
+        assert!(res.is_ok());
+        assert_eq!(res.unwrap().1.span, input);
+    }
+
+    #[test]
+    fn types3() {
+        let input = "List (Map (String, Json))";
+        let res = TypeSignature::parse(input);
+        assert!(res.is_ok());
+        assert_eq!(res.unwrap().1.span, input);
+    }
+
+    #[test]
+    fn tuples() {
+        let inputs = ["()", "(Abc)", "(Abc.defg)", "( x, y, z)"];
+
+        for input in inputs.iter() {
+            let res = TupleType::parse(input);
+            assert!(res.is_ok());
+            let res = res.unwrap();
+            assert_eq!(&res.1.span, input);
+            assert_eq!(res.0, "");
+        }
+    }
+
+    #[test]
+    fn types4() {
+        let input = "[]Float";
+        let res = TypeSignature::parse(input);
+        assert!(res.is_ok());
+        assert_eq!(res.unwrap().1.span, input);
+    }
+
+    #[test]
+    fn types5() {
+        let input = "[][]Float";
+        let res = TypeSignature::parse(input);
+        assert!(res.is_ok());
+        assert_eq!(res.unwrap().1.span, input);
+    }
+
+    #[test]
+    fn vectors() {
+        let inputs = ["[]N", "[]Abc", "[](Abc.defg)", "[][][][]x"];
+
+        for input in inputs.iter() {
+            let res = VectorType::parse(input);
+            assert!(res.is_ok());
+            let res = res.unwrap();
+            assert_eq!(&res.1.span, input);
+            assert_eq!(res.0, "");
+        }
+    }
+
+
+    #[test]
+    fn types6() {
+        let input = "List List String";
+        let res = TypeSignature::parse(input);
+        assert!(res.is_ok());
+        assert_eq!(res.unwrap().1.span, input);
+    }
+
+    #[test]
+    fn types7() {
+        let input = "List Uint8 -> T";
+        let res = TypeSignature::parse(input);
+        assert!(res.is_ok());
+        assert_eq!(res.unwrap().1.span, input);
+    }
+
+    #[test]
+    fn types8() {
+        let input = "Float -> Float -> String";
+        let res = TypeSignature::parse(input);
+        assert!(res.is_ok());
+        assert_eq!(res.unwrap().1.span, input);
+    }
+
+    #[test]
+    fn types9() {
+        let input = "Float -> (Float -> String)";
+        let res = TypeSignature::parse(input);
+        assert!(res.is_ok());
+        assert_eq!(res.unwrap().1.span, input);
+    }
+
+    #[test]
+    fn types10() {
+        let input = "(Float -> Float) -> String";
+        let res = TypeSignature::parse(input);
+        assert!(res.is_ok());
+        assert_eq!(res.unwrap().1.span, input);
+    }
+
+}
+
