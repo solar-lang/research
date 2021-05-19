@@ -8,11 +8,11 @@ pub struct FullIdentifier<'a> {
 
 impl<'a> Parse<'a> for FullIdentifier<'a> {
     fn parse(input: &'a str) -> Res<'a, Self> {
-        use crate::ast::keywords::KeywordDot;
+        use crate::ast::keywords::Dot;
         use nom::{multi::many0, sequence::preceded};
 
         let (rest, first) = Identifier::parse(input)?;
-        let (rest, path) = many0(preceded(KeywordDot::parse_ws, Identifier::parse_ws))(rest)?;
+        let (rest, path) = many0(preceded(Dot::parse_ws, Identifier::parse_ws))(rest)?;
         let span = unsafe { from_to(input, rest) };
 
         let value = std::iter::once(first).chain(path.into_iter()).collect();

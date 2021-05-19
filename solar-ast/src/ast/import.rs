@@ -48,9 +48,9 @@ impl<'a> Parse<'a> for ImportSelector<'a> {
         use keywords::*;
 
         alt((
-            map(KeywordSpread::parse, |KeywordSpread {span}| ImportSelector::Everything {span}),
-            map(preceded(KeywordDot::parse_ws, ImportPath::parse_ws ), ImportSelector::Package),
-            map(delimited(KeywordParenOpen::parse, many1(ImportPath::parse_ws), KeywordParenClose::parse_ws), ImportSelector::Packages),
+            map(Spread::parse, |Spread {span}| ImportSelector::Everything {span}),
+            map(preceded(Dot::parse_ws, ImportPath::parse_ws ), ImportSelector::Package),
+            map(delimited(ParenOpen::parse, many1(ImportPath::parse_ws), ParenClose::parse_ws), ImportSelector::Packages),
                 ))(input)
     }
 }
