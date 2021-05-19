@@ -1,20 +1,40 @@
 use crate::ast::{type_signature::TypeSignature, identifier::{FullIdentifier, Identifier }, expr::{StringLiteral, FullExpression as Expression } };
 
 use crate::parse::*;
+use crate::ast::*;
 use crate::util::*;
 
 pub struct Import<'a> {
     pub span: &'a str,
-    pub path: Identifier<'a>,
-    pub select: Option<ImportSelector<'a>>,
+    pub from: Identifier<'a>,
+    pub select: Option<Box<ImportSelector<'a>>>,
+}
+
+impl<'a> Parse<'a> for Import<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        todo!()
+    }
 }
 
 pub enum ImportSelector<'a> {
-    // ..
-    Everything,
+    // .. (spread)
+    Everything(&'a str),
     // .xyz
-    Package(Identifier<'a>),
-    Packages(Vec<Identifier<'a>>),
+    Package(Import<'a>),
+    Packages(Vec<Import<'a>>),
+}
+
+impl<'a> Parse<'a> for ImportSelector<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        use nom::{sequence::{delimited, preceded }, combinator::map, branch::alt, multi::many1 };
+        use keywords::*;
+
+        alt((
+            map(KeywordSpread::parse, IportSelector::Everything),
+            map(preceded(KeywordDot::parse_ws, Identifier::parse_ws ), ImportSelector::Package),
+            map(delimited(KeywordParenOpen::parse, many1(Import::parse_ws), KeywordParenClose::parse_ws), ImportSelector::Packages),
+                ))(input)
+    }
 }
 
 
