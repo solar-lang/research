@@ -117,3 +117,65 @@ impl<'a> Parse<'a> for Comma<'a> {
         map(tag(","), |span| Comma { span })(input)
     }
 }
+
+
+pub struct Plus<'a> {
+    pub span: &'a str,
+}
+
+impl<'a> Parse<'a> for Plus<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        map(tag("+"), |span| Plus { span })(input)
+    }
+}
+
+
+pub struct Minus<'a> {
+    pub span: &'a str,
+}
+
+impl<'a> Parse<'a> for Minus<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        map(tag("-"), |span| Minus { span })(input)
+    }
+}
+
+pub struct Mut<'a> {
+    pub span: &'a str,
+}
+
+impl<'a> Parse<'a> for Mut<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        map(tag("mut"), |span| Mut { span })(input)
+    }
+}
+
+pub struct Pipe<'a> {
+    pub span: &'a str,
+}
+
+impl<'a> Parse<'a> for Pipe<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        map(tag(":"), |span| Pipe { span })(input)
+    }
+}
+
+pub struct Abs<'a> {
+    pub span: &'a str,
+}
+
+impl<'a> Parse<'a> for Abs<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        map(tag("|"), |span| Abs { span })(input)
+    }
+}
+
+pub struct Type<'a> {
+    pub span: &'a str,
+}
+
+impl<'a> Parse<'a> for Type<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        map(tag("type"), |span| Type { span })(input)
+    }
+}

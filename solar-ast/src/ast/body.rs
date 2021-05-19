@@ -1,7 +1,11 @@
-use crate::ast::{type_signature::TypeSignature, identifier::{FullIdentifier, Identifier }, expr::{StringLiteral, FullExpression as Expression } };
+use crate::ast::{
+    expr::{FullExpression, BlockExpression, StringLiteral},
+    identifier::{FullIdentifier, Identifier},
+    type_signature::TypeSignature,
+};
 
-use crate::parse::*;
 use crate::ast::*;
+use crate::parse::*;
 use crate::util::*;
 
 pub enum FunctionOrTypeOrTest<'a> {
@@ -17,7 +21,7 @@ pub struct Function<'a> {
     pub name: Identifier<'a>,
     pub parameters: Vec<(Identifier<'a>, TypeSignature<'a>)>,
     pub return_type: TypeSignature<'a>,
-    pub instructions: Expression<'a>,
+    pub instructions: FullExpression<'a>,
 }
 
 pub struct GenericStub<'a> {
@@ -42,7 +46,7 @@ pub struct WhereClause<'a> {
 pub struct Test<'a> {
     pub span: &'a str,
     pub name: StringLiteral<'a>,
-    pub instructions: Expression<'a>,
+    pub instructions: BlockExpression<'a>,
 }
 
 pub struct TypeDecl<'a> {
@@ -52,14 +56,51 @@ pub struct TypeDecl<'a> {
     pub fields: EnumOrStructFields<'a>,
 }
 
+
+impl<'a> Parse<'a> for TypeDecl<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        use nom::combinator::opt;
+
+        let (rest, _) = keywords::Type::parse(input)?;
+        let (rest, name) = Identifier::parse_ws(rest)?;
+        let (rest, generic_args_decl) = opt(GenericArgsDecl::parse_ws)(rest)?;
+        let (rest, fields) = EnumOrStructFields::parse_ws(rest)?;
+
+        let span = unsafe {from_to(input, rest) };
+
+        Ok((rest, TypeDecl {span, name, generic_args_decl, fields}))
+    }
+}
+
 pub struct GenericArgsDecl<'a> {
     pub span: &'a str,
     pub generic_arguments: Vec<Identifier<'a>>,
 }
 
+impl<'a> Parse<'a> for GenericArgsDecl<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        use nom::multi::many0;
+        let (rest, generic_arguments) = many0(Identifier::parse_ws)(input)?;
+
+        let span = unsafe { from_to(input, rest) };
+
+        Ok((rest, GenericArgsDecl{span, generic_arguments}))
+    }
+}
+
+
 pub enum EnumOrStructFields<'a> {
     EnumFields(Vec<EnumField<'a>>),
     StructFields(Vec<StructField<'a>>),
+}
+
+impl<'a> Parse<'a> for EnumOrStructFields<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        use nom::{ branch::alt, combinator::map, multi::many1 };
+        alt((map(many1(EnumField::parse_ws), EnumOrStructFields::EnumFields),
+            map(many1(StructField::parse_ws), EnumOrStructFields::StructFields)
+        ))(input)
+    }
 }
 
 pub struct EnumField<'a> {
@@ -68,10 +109,58 @@ pub struct EnumField<'a> {
     pub value_type: Option<TypeSignature<'a>>,
 }
 
+impl<'a> Parse<'a> for EnumField<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        //      |
+        let (rest, _) = keywords::Abs::parse(input)?;
+        let (rest, name) = Identifier::parse_ws(rest)?;
+        let (rest, value_type) = nom::combinator::opt(TypeSignature::parse_ws)(rest)?;
+
+        let span = unsafe { from_to(input, rest) };
+
+        Ok((rest, EnumField { span, name, value_type }))
+    }
+}
+
 pub struct StructField<'a> {
     pub span: &'a str,
     pub public: bool,
     pub mutable: bool,
     pub name: Identifier<'a>,
     pub value_type: TypeSignature<'a>,
+}
+
+impl<'a> Parse<'a> for StructField<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        use keywords::{Minus, Mut, Plus};
+        use nom::{branch::alt, combinator::map};
+
+        // + or -
+        let (rest, public) =
+            alt((map(Plus::parse, |_| true), map(Minus::parse, |_| false)))(input)?;
+
+        // mut
+        let (rest, mutable) = if let Ok((rest, _)) = Mut::parse_ws(rest) {
+            (rest, true)
+        } else {
+            (rest, false)
+        };
+
+        let (rest, name) = Identifier::parse_ws(rest)?;
+
+        let (rest, value_type) = TypeSignature::parse_ws(rest)?;
+
+        let span = unsafe { from_to(input, rest) };
+
+        Ok((
+            rest,
+            StructField {
+                span,
+                public,
+                mutable,
+                name,
+                value_type,
+            },
+        ))
+    }
 }
