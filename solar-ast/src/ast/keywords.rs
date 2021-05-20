@@ -179,3 +179,54 @@ impl<'a> Parse<'a> for Type<'a> {
         map(tag("type"), |span| Type { span })(input)
     }
 }
+
+pub struct Test<'a> {
+    pub span: &'a str,
+}
+
+impl<'a> Parse<'a> for Test<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        map(tag("test"), |span| Test { span })(input)
+    }
+}
+
+pub struct Assign<'a> {
+    pub span: &'a str,
+}
+
+impl<'a> Parse<'a> for Assign<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        map(tag("="), |span| Assign { span })(input)
+    }
+}
+
+
+pub struct Generic<'a> {
+    pub span: &'a str,
+}
+
+impl<'a> Parse<'a> for Generic<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        map(tag("generic"), |span| Generic { span })(input)
+    }
+}
+
+pub struct Where<'a> {
+    pub span: &'a str,
+}
+
+impl<'a> Parse<'a> for Where<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        map(tag("where"), |span| Where { span })(input)
+    }
+}
+
+pub struct When<'a> {
+    pub span: &'a str,
+}
+
+impl<'a> Parse<'a> for When<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        map(tag("when"), |span| When { span })(input)
+    }
+}

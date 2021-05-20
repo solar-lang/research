@@ -1,6 +1,6 @@
 use crate::ast::expr::when::When;
 use crate::ast::identifier::{Identifier, FullIdentifier };
-use solar_tokenizer::Token;
+use crate::{ast::*, parse::*, util::*,};
 
 /// Expressions
 /// The main element of the solar language
@@ -43,12 +43,12 @@ pub enum Value<'a> {
 }
 
 pub struct Array<'a> {
-    pub span: &'a[Token<'a>],
+    pub span: &'a str,
     pub values: Vec<FullExpression<'a>>,
 }
 
 pub struct FunctionCall<'a> {
-    pub span: &'a[Token<'a>],
+    pub span: &'a str,
     // Note: may as well be a variable
     pub function_name: FullIdentifier<'a>,
     pub args: Vec<FunctionArg<'a>>,
@@ -71,6 +71,11 @@ pub struct StringLiteral<'a> {
     value: String
 }
 
+impl<'a> Parse<'a> for StringLiteral<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        unimplemented!();
+    }
+}
 
 // NOTE: Quite complicated, expect for iterative changes
 mod when {
@@ -136,6 +141,12 @@ pub enum ClosureArgs<'a> {
 pub struct BlockExpression<'a> {
     pub span: &'a str,
     pub parts: Vec<BlockExpressionPart<'a>>,
+}
+
+impl<'a> Parse<'a> for BlockExpression<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        unimplemented!();
+    }
 }
 
 pub enum BlockExpressionPart<'a> {
