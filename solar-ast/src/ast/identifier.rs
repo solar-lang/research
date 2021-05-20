@@ -52,10 +52,10 @@ impl<'a> Parse<'a> for Identifier<'a> {
         let (rest, value) = recognize(pair(firstpart, secondpart))(input)?;
 
         // identifiers may not be keywords
-        if is_keyword(value) {}
+        if is_keyword(value) {unimplemented!();}
 
         // may not end with underscore
-        if value.ends_with("_") {}
+        if value.ends_with("_") {unimplemented!();}
 
         // may not contain double underscores __.
         if value.contains("__") {}
