@@ -2,7 +2,7 @@
 blockexpression
     - "{"
     -- there may be as many ; as you need. They are only needed to separate expression
-    - (be-part / ";")*
+    - (be-part | ";")*
     - "}"
 
 be-part
