@@ -3,10 +3,10 @@ body
 - import*
 - functionOrTypeOrTest*
 
-functionOrType
+functionOrTypeOrTest
 / function
 / typeDecl
-// test
+/ test
 
 test
 - "test"
@@ -16,7 +16,7 @@ test
 function
 -   genericStub?
 -   "pub"?
--   "func"
+-- -   "func"
 -   identifier
 -   "("
 -   (identifier type ) ** ","

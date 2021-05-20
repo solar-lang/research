@@ -230,3 +230,14 @@ impl<'a> Parse<'a> for When<'a> {
         map(tag("when"), |span| When { span })(input)
     }
 }
+
+
+pub struct Public<'a> {
+    pub span: &'a str,
+}
+
+impl<'a> Parse<'a> for Public<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        map(tag("pub"), |span| Public { span })(input)
+    }
+}

@@ -8,10 +8,27 @@ use crate::ast::*;
 use crate::parse::*;
 use crate::util::*;
 
+use nom::{
+    branch::alt,
+    combinator::{map, opt},
+    multi::{many0, many1, separated_list0, separated_list1},
+    sequence::{pair, preceded},
+};
+
 pub enum FunctionOrTypeOrTest<'a> {
     Function(Function<'a>),
     TypeDecl(TypeDecl<'a>),
     Test(Test<'a>),
+}
+
+impl<'a> Parse<'a> for FunctionOrTypeOrTest<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        alt((
+            map(Test::parse, FunctionOrTypeOrTest::Test),
+            map(TypeDecl::parse, FunctionOrTypeOrTest::TypeDecl),
+            map(Function::parse, FunctionOrTypeOrTest::Function),
+        ))
+    }
 }
 
 pub struct Function<'a> {
@@ -20,8 +37,53 @@ pub struct Function<'a> {
     pub public: bool,
     pub name: Identifier<'a>,
     pub parameters: Vec<(Identifier<'a>, TypeSignature<'a>)>,
-    pub return_type: TypeSignature<'a>,
+    pub return_type: Option<TypeSignature<'a>>,
     pub instructions: FullExpression<'a>,
+}
+
+impl<'a> Parse<'a> for Function<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        let (rest, generic_stub) = opt(GenericStub::parse)(input)?;
+        let (rest, public) = opt(keywords::Public::parse_ws)(rest)?;
+        let public = public.is_some();
+        // no func keyword. E.g. f(x) = x^2
+        let (rest, name) = Identifier::parse_ws(rest)?;
+
+        //  (
+        let (rest, _) = keywords::ParenOpen::parse_ws(rest)?;
+
+        // x Int, y Int, fac Float
+        let (rest, parameters) = separated_list0(
+            keywords::Comma::parse_ws,
+            pair(Identifier::parse_ws, TypeSignature::parse_ws),
+        )(rest)?;
+
+        //  )
+        let (rest, _) = keywords::ParenClose::parse_ws(rest)?;
+
+        let (rest, return_type) = opt(preceded(
+            keywords::ThinArrow::parse_ws,
+            TypeSignature::parse_ws,
+        ))(rest)?;
+
+        let (rest, instructions) =
+            preceded(keywords::Assign::parse_ws, FullExpression::parse_ws)(rest)?;
+
+        let span = unsafe { from_to(input, rest) };
+
+        Ok((
+            rest,
+            Function {
+                span,
+                generic_stub,
+                public,
+                name,
+                parameters,
+                return_type,
+                instructions,
+            },
+        ))
+    }
 }
 
 // generic A, B where C = add(A, B)
@@ -33,21 +95,27 @@ pub struct GenericStub<'a> {
 
 impl<'a> Parse<'a> for GenericStub<'a> {
     fn parse(input: &'a str) -> Res<'a, Self> {
-        use nom::multi::{many0, separated_list1};
         let (rest, _) = keywords::Generic::parse(input)?;
         // TODO no recover from here
         // A, B, C
-        let (rest, generic_arguments) = separated_list1(keywords::Comma::parse_ws, Identifier::parse_ws)(rest)?;
+        let (rest, generic_arguments) =
+            separated_list1(keywords::Comma::parse_ws, Identifier::parse_ws)(rest)?;
         // where
         let (rest, _) = keywords::Where::parse_ws(rest)?;
         let (rest, where_clauses) = many0(WhereClause::parse_ws)(rest)?;
 
-        let span = unsafe {from_to(input, rest) };
+        let span = unsafe { from_to(input, rest) };
 
-        Ok((rest, GenericStub{span, generic_arguments, where_clauses}))
+        Ok((
+            rest,
+            GenericStub {
+                span,
+                generic_arguments,
+                where_clauses,
+            },
+        ))
     }
 }
-
 
 // C = mul(A, B)
 pub struct WhereClause<'a> {
@@ -59,7 +127,6 @@ pub struct WhereClause<'a> {
 
 impl<'a> Parse<'a> for WhereClause<'a> {
     fn parse(input: &'a str) -> Res<'a, Self> {
-        use nom::multi::separated_list0;
         let (rest, generic_destination) = Identifier::parse(input)?;
         // TODO no recover after
 
@@ -68,10 +135,19 @@ impl<'a> Parse<'a> for WhereClause<'a> {
 
         let (rest, function) = FullIdentifier::parse_ws(rest)?;
 
-        let (rest, generic_function_arguments) = separated_list0(keywords::Comma::parse_ws, Identifier::parse_ws)(rest)?;
+        let (rest, generic_function_arguments) =
+            separated_list0(keywords::Comma::parse_ws, Identifier::parse_ws)(rest)?;
 
         let span = unsafe { from_to(input, rest) };
-        Ok((rest, WhereClause {span, generic_destination, function, generic_function_arguments}))
+        Ok((
+            rest,
+            WhereClause {
+                span,
+                generic_destination,
+                function,
+                generic_function_arguments,
+            },
+        ))
     }
 }
 
@@ -111,8 +187,6 @@ pub struct TypeDecl<'a> {
 
 impl<'a> Parse<'a> for TypeDecl<'a> {
     fn parse(input: &'a str) -> Res<'a, Self> {
-        use nom::combinator::opt;
-
         let (rest, _) = keywords::Type::parse(input)?;
         let (rest, name) = Identifier::parse_ws(rest)?;
         let (rest, generic_args_decl) = opt(GenericArgsDecl::parse_ws)(rest)?;
@@ -139,7 +213,6 @@ pub struct GenericArgsDecl<'a> {
 
 impl<'a> Parse<'a> for GenericArgsDecl<'a> {
     fn parse(input: &'a str) -> Res<'a, Self> {
-        use nom::multi::many0;
         let (rest, generic_arguments) = many0(Identifier::parse_ws)(input)?;
 
         let span = unsafe { from_to(input, rest) };
@@ -161,7 +234,6 @@ pub enum EnumOrStructFields<'a> {
 
 impl<'a> Parse<'a> for EnumOrStructFields<'a> {
     fn parse(input: &'a str) -> Res<'a, Self> {
-        use nom::{branch::alt, combinator::map, multi::many1};
         alt((
             map(many1(EnumField::parse_ws), EnumOrStructFields::EnumFields),
             map(
@@ -209,7 +281,6 @@ pub struct StructField<'a> {
 impl<'a> Parse<'a> for StructField<'a> {
     fn parse(input: &'a str) -> Res<'a, Self> {
         use keywords::{Minus, Mut, Plus};
-        use nom::{branch::alt, combinator::map};
 
         // + or -
         let (rest, public) =
