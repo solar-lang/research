@@ -24,7 +24,7 @@ pub enum FullExpression<'a> {
     Expression(Box<Expression<'a>>),
 }
 
-impl<'a> Parse<'a> for FullIdentifier<'a> {
+impl<'a> Parse<'a> for FullExpression<'a> {
     fn parse(input: &'a str) -> Res<'a, Self> {
         todo!()
     }

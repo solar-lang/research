@@ -21,13 +21,24 @@ pub enum FunctionOrTypeOrTest<'a> {
     Test(Test<'a>),
 }
 
+impl<'a> FunctionOrTypeOrTest<'a> {
+    pub fn span(&self) -> &str {
+        use FunctionOrTypeOrTest::*;
+        match self {
+            Function(f) => f.span,
+            TypeDecl(t) => t.span,
+            Test(t) => t.span,
+        }
+    }
+}
+
 impl<'a> Parse<'a> for FunctionOrTypeOrTest<'a> {
     fn parse(input: &'a str) -> Res<'a, Self> {
         alt((
             map(Test::parse, FunctionOrTypeOrTest::Test),
             map(TypeDecl::parse, FunctionOrTypeOrTest::TypeDecl),
             map(Function::parse, FunctionOrTypeOrTest::Function),
-        ))
+        ))(input)
     }
 }
 
@@ -255,7 +266,7 @@ impl<'a> Parse<'a> for EnumField<'a> {
         //      |
         let (rest, _) = keywords::Abs::parse(input)?;
         let (rest, name) = Identifier::parse_ws(rest)?;
-        let (rest, value_type) = nom::combinator::opt(TypeSignature::parse_ws)(rest)?;
+        let (rest, value_type) = opt(TypeSignature::parse_ws)(rest)?;
 
         let span = unsafe { from_to(input, rest) };
 
@@ -309,5 +320,28 @@ impl<'a> Parse<'a> for StructField<'a> {
                 value_type,
             },
         ))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn types() {
+        let input = [
+            "type TrafficLight | Red | Yellow | Green | RedYellow",
+            "type Gender | Female | Male | Other String",
+            "type Option T | Some T | None" ,
+            "type Result R, E | Ok R | Err E",
+            "type Point - x Float - y Float",
+            "type Point + x Float + y Float",
+            "type Point T + x T + y T",
+            "type Person + birthday Date + name String + mut gender Gender",
+        ];
+
+        for i in &input {
+            let (rest, value) = EnumOrStructFields::parse(i).unwrap();
+            assert_eq!(rest, "");
+        }
     }
 }
