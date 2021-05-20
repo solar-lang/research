@@ -12,7 +12,7 @@ use nom::{
     branch::alt,
     combinator::{map, opt},
     multi::{many0, many1, separated_list0, separated_list1},
-    sequence::{pair, preceded},
+    sequence::{delimited, pair, preceded},
 };
 
 pub enum FunctionOrTypeOrTest<'a> {
@@ -224,7 +224,15 @@ pub struct GenericArgsDecl<'a> {
 
 impl<'a> Parse<'a> for GenericArgsDecl<'a> {
     fn parse(input: &'a str) -> Res<'a, Self> {
-        let (rest, generic_arguments) = many0(Identifier::parse_ws)(input)?;
+        use keywords::*;
+        let (rest, generic_arguments) = alt((
+            map(Identifier::parse, |i| vec![i]),
+            delimited(
+                ParenOpen::parse,
+                separated_list1(Comma::parse_ws, Identifier::parse_ws),
+                ParenClose::parse_ws,
+            ),
+        ))(input)?;
 
         let span = unsafe { from_to(input, rest) };
 
@@ -331,8 +339,8 @@ mod tests {
         let input = [
             "type TrafficLight | Red | Yellow | Green | RedYellow",
             "type Gender | Female | Male | Other String",
-            "type Option T | Some T | None" ,
-            "type Result R, E | Ok R | Err E",
+            "type Option T | Some T | None",
+            "type Result (R, E) | Ok R | Err E",
             "type Point - x Float - y Float",
             "type Point + x Float + y Float",
             "type Point T + x T + y T",
@@ -340,8 +348,10 @@ mod tests {
         ];
 
         for i in &input {
-            let (rest, value) = EnumOrStructFields::parse(i).unwrap();
+            let (rest, value) = TypeDecl::parse(i).unwrap();
+            // here we just test if the entire input was consumed
             assert_eq!(rest, "");
+            assert_eq!(&value.span, i);
         }
     }
 }
