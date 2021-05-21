@@ -1,19 +1,20 @@
-pub mod full;
 mod block;
-pub use full::FullExpression;
+pub mod full;
 pub use block::BlockExpression;
+pub use full::FullExpression;
 type BFE<'a> = Box<FullExpression<'a>>;
 
 use nom::{
     branch::alt,
     combinator::{map, opt},
-    multi::{many0, many1},
+    multi::{many0, many1, separated_list0},
     sequence::{delimited, pair, preceded},
 };
 
 use crate::ast::expr::when::When;
 use crate::ast::identifier::{FullIdentifier, Identifier};
 use crate::{ast::*, parse::*, util::*};
+use type_signature::TypeSignature;
 
 /// Expressions
 /// The main element of the solar language
@@ -132,7 +133,8 @@ pub struct StringLiteral<'a> {
 
 impl<'a> Parse<'a> for StringLiteral<'a> {
     fn parse(input: &'a str) -> Res<'a, Self> {
-        unimplemented!();
+        let (rest, _) = keywords::StringStart::parse(input)?;
+        todo!()
     }
 }
 
@@ -188,11 +190,60 @@ mod when {
 
 pub struct Closure<'a> {
     pub span: &'a str,
-    pub arguments: ClosureArgs<'a>,
+    pub arguments: ClosureArgsKind<'a>,
     pub body: Box<Expression<'a>>,
 }
 
-pub enum ClosureArgs<'a> {
-    Single(Identifier<'a>),
-    Multiple(Identifier<'a>),
+impl<'a> Parse<'a> for Closure<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        let (rest, arguments) = ClosureArgsKind::parse(input)?;
+        let (rest, body) = map(Expression::parse_ws, Box::new)(rest)?;
+
+        let span = unsafe { from_to(input, rest) };
+
+        Ok((
+            rest,
+            Closure {
+                span,
+                arguments,
+                body,
+            },
+        ))
+    }
+}
+
+pub enum ClosureArgsKind<'a> {
+    SingleArgForm(Identifier<'a>),
+    NormalForm(ClosureArgs<'a>),
+}
+
+impl<'a> Parse<'a> for ClosureArgsKind<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        alt((
+            map(Identifier::parse, ClosureArgsKind::SingleArgForm),
+            map(ClosureArgs::parse, ClosureArgsKind::NormalForm),
+        ))(input)
+    }
+}
+
+pub struct ClosureArgs<'a> {
+    pub span: &'a str,
+    pub args: Vec<(Identifier<'a>, Option<TypeSignature<'a>>)>,
+}
+
+impl<'a> Parse<'a> for ClosureArgs<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        use keywords::*;
+        let (rest, args) = delimited(
+            ParenOpen::parse,
+            separated_list0(
+                Comma::parse_ws,
+                pair(Identifier::parse_ws, opt(TypeSignature::parse_ws)),
+            ),
+            ParenClose::parse_ws,
+        )(input)?;
+
+        let span = unsafe { from_to(input, rest) };
+        Ok((rest, ClosureArgs { span, args }))
+    }
 }

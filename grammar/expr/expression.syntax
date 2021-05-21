@@ -116,7 +116,7 @@ closure
     - expression
 
 closureargs
-    / "(" (identifier ** ",") ")"
+    / "(" ((identifier type) ** ",") ")"
     / identifier
 
 -- sin 3.14
