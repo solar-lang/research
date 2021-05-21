@@ -1,34 +1,15 @@
+pub mod full;
+pub use full::FullExpression;
+type BFE<'a> = Box<FullExpression<'a>>;
+
+use nom::{combinator::map, branch::alt, sequence::delimited };
+
 use crate::ast::expr::when::When;
-use crate::ast::identifier::{Identifier, FullIdentifier };
-use crate::{ast::*, parse::*, util::*,};
+use crate::ast::identifier::{FullIdentifier, Identifier};
+use crate::{ast::*, parse::*, util::*};
 
 /// Expressions
 /// The main element of the solar language
-
-type BFE<'a> = Box<FullExpression<'a>>;
-pub enum FullExpression<'a> {
-    And(BFE<'a>, BFE<'a>),
-    Or(BFE<'a>, BFE<'a>),
-    Concat(BFE<'a>, BFE<'a>),
-    Add(BFE<'a>, BFE<'a>),
-    Subtract(BFE<'a>, BFE<'a>),
-    Multiply(BFE<'a>, BFE<'a>),
-    Divide(BFE<'a>, BFE<'a>),
-    Power(BFE<'a>, BFE<'a>),
-    Sqrt(BFE<'a>),
-    Negate(BFE<'a>),
-    Not(BFE<'a>),
-    Pipe(BFE<'a>, BFE<'a>),
-    // direct field access
-    Dot(BFE<'a>, BFE<'a>),
-    Expression(Box<Expression<'a>>),
-}
-
-impl<'a> Parse<'a> for FullExpression<'a> {
-    fn parse(input: &'a str) -> Res<'a, Self> {
-        todo!()
-    }
-}
 
 //  pub span: &'a str,
 pub enum Expression<'a> {
@@ -36,16 +17,46 @@ pub enum Expression<'a> {
     Value(Value<'a>),
 }
 
+impl<'a> Parse<'a> for Expression<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        alt((
+            map(FunctionCall::parse, Expression::FunctionCall),
+            map(Value::parse, Expression::Value),
+        ))(input)
+    }
+}
+
 pub enum Value<'a> {
     Litaral(Literal<'a>),
     FullIdentifier(FullIdentifier<'a>),
     Closure(Closure<'a>),
     Array(Array<'a>),
-    Abs(BFE<'a>),
-    Parenthesis(BFE<'a>),
-    Tuple(Vec<FullExpression<'a>>),
+    Abs(Abs<'a>),
+    Tuple(Tuple<'a>),
     When(When<'a>),
     BlockExpression(BlockExpression<'a>),
+}
+
+struct Abs<'a> {
+    pub span: &'a str,
+    pub expr: FullExpression<'a>,
+}
+
+impl<'a> Parse<'a> for Abs<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        let (rest, expr) = delimited(keywords::ParenOpen::parse, FullExpression::parse_ws, keywords::ParenClose::parse_ws)(input)?;
+        let span = unsafe{from_to(input, rest)};
+
+        Ok((rest, Abs{span, expr}))
+    }
+}
+
+
+
+// may as well just be some parenthesis
+struct Tuple<'a> {
+    pub span: &'a str,
+    pub values: Vec<FullExpression<'a>>,
 }
 
 pub struct Array<'a> {
@@ -56,13 +67,20 @@ pub struct Array<'a> {
 pub struct FunctionCall<'a> {
     pub span: &'a str,
     // Note: may as well be a variable
+    // Note: may be field access. Currently there is no distinction
     pub function_name: FullIdentifier<'a>,
     pub args: Vec<FunctionArg<'a>>,
 }
 
+impl<'a> Parse<'a> for FunctionCall<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        todo!()
+    }
+}
+
 pub struct FunctionArg<'a> {
     pub name: Identifier<'a>,
-    pub value: Value<'a>
+    pub value: Value<'a>,
 }
 
 pub enum Literal<'a> {
@@ -74,7 +92,7 @@ pub enum Literal<'a> {
 
 pub struct StringLiteral<'a> {
     span: &'a str,
-    value: String
+    value: String,
 }
 
 impl<'a> Parse<'a> for StringLiteral<'a> {
@@ -144,6 +162,8 @@ pub enum ClosureArgs<'a> {
     Multiple(Identifier<'a>),
 }
 
+
+
 pub struct BlockExpression<'a> {
     pub span: &'a str,
     pub parts: Vec<BlockExpressionPart<'a>>,
@@ -156,16 +176,22 @@ impl<'a> Parse<'a> for BlockExpression<'a> {
 }
 
 pub enum BlockExpressionPart<'a> {
-    Let {identifier: Identifier<'a>, expr: FullExpression<'a>},
+    Let {
+        identifier: Identifier<'a>,
+        expr: FullExpression<'a>,
+    },
     Return(Option<FullExpression<'a>>),
     Break,
     Next,
     Expression(FullExpression<'a>),
     Lopp(BlockExpression<'a>),
-    If {condition: FullExpression<'a>, then: BlockExpression<'a>},
-    For{
+    If {
+        condition: FullExpression<'a>,
+        then: BlockExpression<'a>,
+    },
+    For {
         variable: Identifier<'a>,
         over: FullExpression<'a>,
         body: BlockExpression<'a>,
-    }
+    },
 }

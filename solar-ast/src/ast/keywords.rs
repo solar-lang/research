@@ -241,3 +241,41 @@ impl<'a> Parse<'a> for Public<'a> {
         map(tag("pub"), |span| Public { span })(input)
     }
 }
+
+pub struct And<'a> {
+    pub span: &'a str,
+}
+
+impl<'a> Parse<'a> for And<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        map(tag("and"), |span| And { span })(input)
+    }
+}
+
+macro_rules! keyword {
+    ($name:ident, $tag:tt) => {
+
+        pub struct $name<'a> {
+            pub span: &'a str,
+        }
+
+        impl<'a> Parse<'a> for $name<'a> {
+            fn parse(input: &'a str) -> Res<'a, Self> {
+                map(tag($tag), |span| $name { span })(input)
+            }
+        }
+
+    }
+}
+
+keyword!(Or, "or");
+keyword!(Concat, "++");
+keyword!(Add, "+");
+keyword!(Subtract, "-");
+keyword!(Multiply, "*");
+keyword!(Divide, "/");
+keyword!(Power, "^");
+keyword!(Sqrt, "√");
+keyword!(Not, "!");
+keyword!(Colon, ":");
+keyword!(SemiColon, ";");

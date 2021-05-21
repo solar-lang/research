@@ -49,13 +49,24 @@ value
     / fullidentifier
     / closure
     / array
-    / "|" fullexpression "|"
+    / abs
     -- tuple or parenthesis
-    / "(" fullexpression ** "," ")"
+    / tuple
     / when
     / blockexpression
     -- Might be included. Complicates things. Hard to read for beginners
     -- / "$" fullexpression
+
+abc
+ - "|"
+ - fullexpression
+ - "|"
+
+tuple
+ - "("
+ - fullexpression ** ","
+ - ")"
+
 
 array
 -   "[",
