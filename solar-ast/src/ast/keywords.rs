@@ -3,7 +3,6 @@ use nom::{bytes::complete::tag, combinator::map};
 
 macro_rules! keyword {
     ($name:ident, $tag:tt) => {
-
         pub struct $name<'a> {
             pub span: &'a str,
         }
@@ -13,61 +12,60 @@ macro_rules! keyword {
                 map(tag($tag), |span| $name { span })(input)
             }
         }
-
-    }
+    };
 }
 
-keyword!(Mut, "mut");
-keyword!(Pipe, ":");
-keyword!(Type, "type");
 keyword!(Abs, "|");
-keyword!(Dot, ".");
-keyword!(Spread, "..");
-keyword!(ThinArrow, "->");
-keyword!(FatArrow, "=>");
-keyword!(Comma, ",");
-keyword!(Plus, "+");
-keyword!(Minus, "-");
-keyword!(Test, "test");
-keyword!(Assign, "=");
-keyword!(Generic, "generic");
-keyword!(Where, "where");
-keyword!(When, "when");
-keyword!(Public, "pub");
+keyword!(Add, "+");
 keyword!(And, "and");
+keyword!(Assign, "=");
+keyword!(BracketClose, "]");
+keyword!(BracketOpen, "[");
+keyword!(Break, "break");
+keyword!(CharStart, "'");
+keyword!(Colon, ":");
+keyword!(Comma, ",");
+keyword!(Comment, "#");
+keyword!(Concat, "++");
+keyword!(CurlyClose, "}");
+keyword!(CurlyOpen, "{");
+keyword!(Divide, "/");
+keyword!(Do, "do");
+keyword!(Dot, ".");
+keyword!(Equal, "==");
+keyword!(FatArrow, "=>");
+keyword!(For, "for");
+keyword!(Generic, "generic");
+keyword!(Greater, ">");
+keyword!(GreaterEqual, ">=");
+keyword!(If, "if");
+keyword!(In, "in");
+keyword!(Is, "is");
+keyword!(Let, "let");
+keyword!(Loop, "loop");
+keyword!(Minus, "-");
+keyword!(Multiply, "*");
+keyword!(Mut, "mut");
+keyword!(Next, "next");
+keyword!(Not, "!");
 keyword!(Or, "or");
 keyword!(ParenClose, ")");
 keyword!(ParenOpen, "(");
-keyword!(BracketClose, "]");
-keyword!(BracketOpen, "[");
-keyword!(CurlyClose, "}");
-keyword!(CurlyOpen, "{");
-keyword!(Smaller, "<");
-keyword!(Greater, ">");
-keyword!(SmallerEqual, "<=");
-keyword!(GreaterEqual, ">=");
-keyword!(Equal, "==");
-keyword!(Concat, "++");
-keyword!(Add, "+");
-keyword!(Subtract, "-");
-keyword!(Multiply, "*");
-keyword!(Divide, "/");
+keyword!(Pipe, ":");
+keyword!(Plus, "+");
 keyword!(Power, "^");
-keyword!(Sqrt, "√");
-keyword!(Not, "!");
-keyword!(Colon, ":");
-keyword!(SemiColon, ";");
-keyword!(If, "if");
-keyword!(Do, "do");
-keyword!(For, "for");
-keyword!(In, "in");
-keyword!(Loop, "loop");
-keyword!(Let, "let");
-keyword!(Break, "break");
-keyword!(Next, "next");
+keyword!(Public, "pub");
 keyword!(Return, "return");
-keyword!(Is, "is");
-keyword!(Then, "then");
-keyword!(Comment, "#");
+keyword!(SemiColon, ";");
+keyword!(Smaller, "<");
+keyword!(SmallerEqual, "<=");
+keyword!(Spread, "..");
+keyword!(Sqrt, "√");
 keyword!(StringStart, "\"");
-keyword!(CharStart, "'");
+keyword!(Subtract, "-");
+keyword!(Test, "test");
+keyword!(Then, "then");
+keyword!(ThinArrow, "->");
+keyword!(Type, "type");
+keyword!(When, "when");
+keyword!(Where, "where");
