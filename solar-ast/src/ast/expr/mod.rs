@@ -382,3 +382,27 @@ impl<'a> Parse<'a> for Return<'a> {
         Ok((rest, Return { span, value }))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    macro_rules! derive_tests {
+        ($ty:ty, $testname:ident, $list:tt) => {
+            #[test]
+            fn $testname() {
+                let input = $list;
+                for i in input.iter() {
+                    let (rest, _) = <$ty>::parse(i).unwrap();
+                    assert_eq!(rest, "");
+                }
+            }
+        };
+    }
+
+    derive_tests!(Return, return_expr, ["return", "return 7", "return None"]);
+    derive_tests!(If, if_expr, ["if true do {}", "if !true do { print x }"]);
+    derive_tests!(Loop, loop_expr, ["loop {}"]);
+    derive_tests!(Abs, abs_expr, ["|x|", "|[1, 2, 3]|"]);
+    derive_tests!(Let, let_expr, ["let x = tag n"]);
+}
