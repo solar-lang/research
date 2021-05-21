@@ -134,7 +134,7 @@ impl<'a> Parse<'a> for StringLiteral<'a> {
     }
 }
 
-// NOTE: Quite complicated, expect for iterative changes
+// NOTE: Quite complicated, expect iterative changes
 mod when {
     use super::*;
 
