@@ -2,18 +2,46 @@
 blockexpression
     - "{"
     -- there may be as many ; as you need. They are only needed to separate expression
-    - (be-part | ";")*
+    - (be-part)*
     - "}"
 
 be-part
-    / "let" identifer "=" fullexpression
+    / let
     -- return returns from the entire function
-    / "return" fullexpression?
+    / return
     / "break"
     / "next"
+    / loop
+    / if
+    / for
     / fullexpression
-    / "loop" blockexpression
-    / "if" fullexpression "do" blockexpression
-    / "for" identifer "in" fullexpression "do" blockexpression
+    / ";"
 
+if
+ - "if"
+ - fullexpression
+ - "do"
+ - blockexpression
+
+for
+ - "for"
+ - identifer
+ - "in"
+ - fullexpression
+ - "do"
+ - blockexpression
+
+loop
+ - "loop"
+ - blockexpression
+
+let
+ - "let"
+ - identifer
+ - "="
+ - fullexpression
+
+return
+ - "return"
+ - fullexpression?
 
