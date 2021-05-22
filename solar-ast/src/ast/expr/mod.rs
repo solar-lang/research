@@ -1,4 +1,6 @@
 mod block;
+mod string;
+pub use string::*;
 pub mod full;
 pub use block::BlockExpression;
 pub use full::FullExpression;
@@ -126,18 +128,6 @@ pub enum Literal<'a> {
     String(StringLiteral<'a>),
 }
 
-pub struct StringLiteral<'a> {
-    span: &'a str,
-    value: String,
-}
-
-impl<'a> Parse<'a> for StringLiteral<'a> {
-    fn parse(input: &'a str) -> Res<'a, Self> {
-        let (rest, _) = keywords::StringStart::parse(input)?;
-        todo!()
-    }
-}
-
 // NOTE: Quite complicated, expect iterative changes
 mod when {
     use super::*;
@@ -196,9 +186,11 @@ pub struct Closure<'a> {
 
 impl<'a> Parse<'a> for Closure<'a> {
     fn parse(input: &'a str) -> Res<'a, Self> {
+        // (x)
         let (rest, arguments) = ClosureArgsKind::parse(input)?;
         // =>
         let (rest, _ ) = keywords::FatArrow::parse_ws(rest)?;
+        // (x^2)
         let (rest, body) = map(Expression::parse_ws, Box::new)(rest)?;
 
         let span = unsafe { from_to(input, rest) };
