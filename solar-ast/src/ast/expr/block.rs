@@ -6,9 +6,8 @@ use nom::{
 };
 
 use crate::{ast::*, parse::*, util::*};
-use identifier::Identifier;
 use expr::FullExpression;
-
+use identifier::Identifier;
 
 pub struct BlockExpression<'a> {
     pub span: &'a str,

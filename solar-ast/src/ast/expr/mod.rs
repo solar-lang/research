@@ -189,7 +189,7 @@ impl<'a> Parse<'a> for Closure<'a> {
         // (x)
         let (rest, arguments) = ClosureArgsKind::parse(input)?;
         // =>
-        let (rest, _ ) = keywords::FatArrow::parse_ws(rest)?;
+        let (rest, _) = keywords::FatArrow::parse_ws(rest)?;
         // (x^2)
         let (rest, body) = map(Expression::parse_ws, Box::new)(rest)?;
 
@@ -242,7 +242,6 @@ impl<'a> Parse<'a> for ClosureArgs<'a> {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -260,5 +259,15 @@ mod tests {
         };
     }
     derive_tests!(Abs, abs_expr, ["|x|", "|[1, 2, 3]|"]);
-    derive_tests!(ClosureArgsKind, closure_arguments, [ "(x)", "x", "(x, y)", "(x Float, y Float)", "(x Float, y Float, info)" ]);
+    derive_tests!(
+        ClosureArgsKind,
+        closure_arguments,
+        [
+            "(x)",
+            "x",
+            "(x, y)",
+            "(x Float, y Float)",
+            "(x Float, y Float, info)"
+        ]
+    );
 }

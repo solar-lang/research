@@ -1,7 +1,7 @@
 // full expression
 
+use crate::ast::expr::{Expression, FunctionCall};
 use crate::{ast::*, parse::*, util::*};
-use crate::ast::expr::{FunctionCall, Expression };
 
 pub enum FullExpression<'a> {
     And(And<'a>),
@@ -65,9 +65,17 @@ impl<'a> Pipe<'a> {
         if let Ok((rest, _)) = keywords::Colon::parse_ws(rest) {
             let (rest, function_call) = FunctionCall::parse_ws(rest)?;
 
-            let span = unsafe {from_to(input, rest)};
+            let span = unsafe { from_to(input, rest) };
 
-            return Ok((rest, Pipe{span, expr, function_call}.into()));
+            return Ok((
+                rest,
+                Pipe {
+                    span,
+                    expr,
+                    function_call,
+                }
+                .into(),
+            ));
         }
 
         let expr = FullExpression::Expression(expr);
@@ -81,7 +89,6 @@ impl<'a> Into<FullExpression<'a>> for Pipe<'a> {
         FullExpression::Pipe(self)
     }
 }
-
 
 /// create a simple AST Node
 /// Used in Full Expression
@@ -103,7 +110,7 @@ macro_rules! create_ast_expr {
                     let left: Box<FullExpression<'a>> = Box::new(left.into());
                     let right: Box<FullExpression<'a>> = Box::new(right.into());
 
-                    return Ok((rest, FullExpression::$name( $name { span, left, right })));
+                    return Ok((rest, FullExpression::$name($name { span, left, right })));
                 }
 
                 Ok((rest, left.into()))
@@ -113,7 +120,7 @@ macro_rules! create_ast_expr {
                 crate::parse::ws(Self::parse)(input)
             }
         }
-    }
+    };
 }
 
 create_ast_expr!(And, keywords::And, Or);
@@ -136,10 +143,10 @@ impl<'a> Parse<'a> for Negate<'a> {
         let (rest, _) = keywords::Minus::parse(input)?;
         let (rest, expr) = Expression::parse_ws(rest)?;
 
-        let span = unsafe {from_to(input, rest)};
+        let span = unsafe { from_to(input, rest) };
         let expr = Box::new(expr);
 
-        Ok((rest, Negate{span, expr}))
+        Ok((rest, Negate { span, expr }))
     }
 }
 
@@ -159,10 +166,10 @@ impl<'a> Parse<'a> for Sqrt<'a> {
         let (rest, _) = keywords::Sqrt::parse(input)?;
         let (rest, expr) = Expression::parse_ws(rest)?;
 
-        let span = unsafe {from_to(input, rest)};
+        let span = unsafe { from_to(input, rest) };
         let expr = Box::new(expr);
 
-        Ok((rest, Sqrt{span, expr}))
+        Ok((rest, Sqrt { span, expr }))
     }
 }
 

@@ -1,6 +1,11 @@
 use crate::{ast::*, parse::*, util::*};
 use expr::FullExpression;
-use nom::{branch::alt, bytes::complete::{tag, is_not }, combinator::{map, value, verify},  sequence::preceded};
+use nom::{
+    branch::alt,
+    bytes::complete::{is_not, tag},
+    combinator::{map, value, verify},
+    sequence::preceded,
+};
 
 pub struct StringLiteral<'a> {
     span: &'a str,
@@ -31,7 +36,11 @@ fn parse_unicode(input: &str) -> nom::IResult<&str, char> {
         // `delimited` is like `preceded`, but it parses both a prefix and a suffix.
         // It returns the result of the middle parser. In this case, it parses
         // {XXXX}, where XXXX is 1 to 6 hex numerals, and returns XXXX
-        delimited(keywords::ParenOpen::parse, parse_hex, keywords::ParenClose::parse),
+        delimited(
+            keywords::ParenOpen::parse,
+            parse_hex,
+            keywords::ParenClose::parse,
+        ),
     );
 
     // `map_res` takes the result of a parser and applies a function that returns
@@ -47,8 +56,8 @@ fn parse_unicode(input: &str) -> nom::IResult<&str, char> {
 }
 
 struct InlineExpression<'a> {
-   pub span: &'a str,
-   pub expr: FullExpression<'a>,
+    pub span: &'a str,
+    pub expr: FullExpression<'a>,
 }
 
 impl<'a> Parse<'a> for InlineExpression<'a> {
@@ -58,9 +67,9 @@ impl<'a> Parse<'a> for InlineExpression<'a> {
         let (rest, expr) = FullExpression::parse_ws(rest)?;
         let (rest, _) = keywords::ParenClose::parse_ws(rest)?;
 
-        let span = unsafe {from_to(input, rest)};
+        let span = unsafe { from_to(input, rest) };
 
-        Ok((rest, InlineExpression{span, expr}))
+        Ok((rest, InlineExpression { span, expr }))
     }
 }
 
@@ -84,7 +93,7 @@ fn parse_escape_codes(input: &str) -> nom::IResult<&str, char> {
     preceded(tag_escape, alt(codes))(input)
 }
 
-// matches part of a string until a special character occurs 
+// matches part of a string until a special character occurs
 // for strings delimited by ""
 fn parse_literal1(i: &str) -> nom::IResult<&str, &str> {
     // parse until ", \ or $ occurs
@@ -93,7 +102,7 @@ fn parse_literal1(i: &str) -> nom::IResult<&str, &str> {
     verify(matcher, |s: &str| !s.is_empty())(i)
 }
 
-// matches part of a string until a special character occurs 
+// matches part of a string until a special character occurs
 // for strings delimited by ""
 fn parse_literal2(i: &str) -> nom::IResult<&str, &str> {
     // parse until ", \ or $ occurs

@@ -1,5 +1,4 @@
-
-use crate::{ parse::*, ast::*, util::* };
+use crate::{ast::*, parse::*, util::*};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Import<'a> {
@@ -23,11 +22,18 @@ impl<'a> Parse<'a> for ImportPath<'a> {
                 let select = Some(Box::new(select));
                 let span = unsafe { from_to(input, rest) };
 
-                Ok((rest, ImportPath {span, from, select}))
-            },
+                Ok((rest, ImportPath { span, from, select }))
+            }
             _ => {
                 let span = unsafe { from_to(input, rest) };
-                Ok((rest, ImportPath { span, from, select: None}))
+                Ok((
+                    rest,
+                    ImportPath {
+                        span,
+                        from,
+                        select: None,
+                    },
+                ))
             }
         }
     }
@@ -44,17 +50,33 @@ pub enum ImportSelector<'a> {
 
 impl<'a> Parse<'a> for ImportSelector<'a> {
     fn parse(input: &'a str) -> Res<'a, Self> {
-        use nom::{sequence::{delimited, preceded }, combinator::map, branch::alt, multi::many1 };
         use keywords::*;
+        use nom::{
+            branch::alt,
+            combinator::map,
+            multi::many1,
+            sequence::{delimited, preceded},
+        };
 
         alt((
-            map(Spread::parse, |Spread {span}| ImportSelector::Everything {span}),
-            map(preceded(Dot::parse_ws, ImportPath::parse_ws ), ImportSelector::Package),
-            map(delimited(ParenOpen::parse, many1(ImportPath::parse_ws), ParenClose::parse_ws), ImportSelector::Packages),
-                ))(input)
+            map(Spread::parse, |Spread { span }| {
+                ImportSelector::Everything { span }
+            }),
+            map(
+                preceded(Dot::parse_ws, ImportPath::parse_ws),
+                ImportSelector::Package,
+            ),
+            map(
+                delimited(
+                    ParenOpen::parse,
+                    many1(ImportPath::parse_ws),
+                    ParenClose::parse_ws,
+                ),
+                ImportSelector::Packages,
+            ),
+        ))(input)
     }
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -67,7 +89,6 @@ mod tests {
         assert!(imports.is_ok());
         let (rest, imports) = imports.unwrap();
         assert_eq!(rest, "  ");
-        assert_eq!(imports.span, &input[..( input.len() -2 )]);
+        assert_eq!(imports.span, &input[..(input.len() - 2)]);
     }
 }
-

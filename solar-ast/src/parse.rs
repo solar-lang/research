@@ -17,10 +17,10 @@ pub trait Combinator<O> {
     fn ws(self) -> O;
 }
 
-
 pub fn ws<'a, T>(f: impl Fn(&'a str) -> Res<'a, T>) -> impl Fn(&'a str) -> Res<'a, T> {
     move |input: &str| {
-        let (input, _whitespace) = nom::bytes::complete::take_while(|c| c ==' ' || c == '\n')(input)?;
+        let (input, _whitespace) =
+            nom::bytes::complete::take_while(|c| c == ' ' || c == '\n')(input)?;
         f(input)
     }
 }

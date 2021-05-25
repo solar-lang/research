@@ -226,7 +226,6 @@ mod tests {
         }
     }
 
-
     #[test]
     fn types6() {
         let input = "List List String";
@@ -266,6 +265,4 @@ mod tests {
         assert!(res.is_ok());
         assert_eq!(res.unwrap().1.span, input);
     }
-
 }
-

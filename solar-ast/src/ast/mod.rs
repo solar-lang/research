@@ -1,9 +1,9 @@
-pub mod keywords;
-pub mod import;
-pub mod type_signature;
-pub mod identifier;
 pub mod body;
 pub mod expr;
+pub mod identifier;
+pub mod import;
+pub mod keywords;
+pub mod type_signature;
 use body::FunctionOrTypeOrTest;
 use import::Import;
 
@@ -13,4 +13,3 @@ pub struct Ast<'a> {
     pub imports: Vec<Import<'a>>,
     pub functions_and_types_and_tests: Vec<FunctionOrTypeOrTest<'a>>,
 }
-
