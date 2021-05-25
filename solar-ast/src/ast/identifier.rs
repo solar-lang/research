@@ -17,7 +17,7 @@ impl<'a> Parse<'a> for FullIdentifier<'a> {
 
         let value = std::iter::once(first).chain(path.into_iter()).collect();
 
-        Ok((rest, FullIdentifier {span, value}))
+        Ok((rest, FullIdentifier { span, value }))
     }
 }
 
@@ -44,21 +44,24 @@ fn isnumber(c: char) -> bool {
 impl<'a> Parse<'a> for Identifier<'a> {
     fn parse(input: &'a str) -> Res<'a, Self> {
         use nom::bytes::complete::{take_while, take_while1};
-        use nom::combinator::recognize;
+        use nom::combinator::{recognize, verify};
         use nom::sequence::pair;
+
+        /// extended requirements to make an identifier solar compliant
+        fn verify_ident(value: &str) -> bool {
+            // identifiers may not be keywords
+            !(is_keyword(value) ||
+
+            // may not end with underscore
+             value.ends_with("_") ||
+
+            // may not contain double underscores __.
+             value.contains("__"))
+        }
 
         let firstpart = take_while1(isalpha);
         let secondpart = take_while(|c| isalpha(c) || isnumber(c) || c == '_');
-        let (rest, value) = recognize(pair(firstpart, secondpart))(input)?;
-
-        // identifiers may not be keywords
-        if is_keyword(value) {unimplemented!();}
-
-        // may not end with underscore
-        if value.ends_with("_") {unimplemented!();}
-
-        // may not contain double underscores __.
-        if value.contains("__") {}
+        let (rest, value) = verify(recognize(pair(firstpart, secondpart)), verify_ident)(input)?;
 
         Ok((rest, Identifier { value, span: value }))
     }
