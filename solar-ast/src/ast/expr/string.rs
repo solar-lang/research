@@ -187,3 +187,25 @@ impl<'a> Parse<'a> for IString<'a> {
         Ok((rest, IString { span, parts }))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn test_string_parsing() {
+        let inputs = [
+            "'this is a string'",
+            "\"this is a string as well\"",
+            "'this\n, this is an escaped string with non ascii characters öüä \n'",
+            "\"this\n, this is an escaped string with non ascii characters öüä \n\"",
+            "\"this\n, this is an escaped string \\\" \n\"",
+            "'this\n, this is an escaped string \\' with delimiters inside it'",
+            "'finally, $('string') interpolation'",
+        ];
+
+        for input in inputs.iter() {
+            let (rest,_) = IString::parse(input).unwrap();
+            assert_eq!(rest, "");
+        }
+    }
+}
