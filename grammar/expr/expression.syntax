@@ -46,6 +46,7 @@ literal
 
 value
     / literal
+    / istring
     / fullidentifier
     / closure
     / array
