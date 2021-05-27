@@ -57,7 +57,7 @@ value
     -- Might be included. Complicates things. Hard to read for beginners
     -- / "$" fullexpression
 
-abc
+abs
  - "|"
  - fullexpression
  - "|"

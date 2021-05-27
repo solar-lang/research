@@ -47,6 +47,21 @@ pub enum Value<'a> {
     BlockExpression(BlockExpression<'a>),
 }
 
+impl<'a> Parse<'a> for Value<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        alt((
+            Literal::parse,
+            FullIdentifier::parse,
+            Closure::parse,
+            Array::parse,
+            Abs::parse,
+            Tuple::parse,
+            When::parse,
+            BlockExpression::parse,
+        ))(input)
+    }
+}
+
 struct Abs<'a> {
     pub span: &'a str,
     pub expr: FullExpression<'a>,
