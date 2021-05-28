@@ -74,43 +74,6 @@ array
 -   fullexpression ** ","
 -   "]",
 
-arrayguard
-    - "[" -- while parenthesis are discouraged when possible, this helps distinct things visually
-    - (whenguard ** ",")
-    - (identifer "..")?
-    - "]"
-
-
-objectguard
-    - fullidentifier
-    - (identifier "=" whenguard )*
-
-tupleguard
-    - "("
-    - whenguard ** ","
-    - ")"
-
--- literals or guard in parenthesis
-parenwhenguard
-    / literal -- variable binding
-    / bool
-    / int
-    / float
-    / string
-    /   "(" whenguard ")"
-
-whenguard
-    / literal
-    / objectguard
-    / arrayguard
-    / tupleguard
-    / identifer -- variable binding
-
-when
-    - "when" fullexpression
-    - ("is" whenguard "then" fullexpression)*
-    - ("else" fullexpression)?
-
 closure
     - closureargs
     - "=>"
@@ -128,6 +91,6 @@ functioncall
     - functioncallarg*
 
 functioncallarg
-    - (identifier "=")
+    - (identifier "=")?
     - value
 

@@ -1,0 +1,45 @@
+-- vim: syntax=haskell:
+
+-- literals or guard in parenthesis
+parenguard
+    / bool
+    / int
+    / float
+    / string
+    / literal -- variable binding
+    /   "(" guard ")"
+
+
+arrayguard
+    - "[" -- while parenthesis are discouraged when possible, this helps distinct things visually
+    - (whenguard ** ",")
+    - (identifer "..")?
+    - "]"
+
+
+objectguard
+    - fullidentifier
+    - (identifier "=" whenguard )*
+
+tupleguard
+    - "("
+    - whenguard ** ","
+    - ")"
+
+guard
+    / literal
+    / objectguard
+    / arrayguard
+    / tupleguard
+    / identifer -- variable binding
+
+branch
+    - "is"
+    - whenguard
+    - "then"
+    - fullexpression)
+
+when
+    - "when" fullexpression
+    - branch*
+    - ("else" fullexpression)?
