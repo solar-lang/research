@@ -204,7 +204,7 @@ mod tests {
         ];
 
         for input in inputs.iter() {
-            let (rest,_) = IString::parse(input).unwrap();
+            let (rest, _) = IString::parse(input).unwrap();
             assert_eq!(rest, "");
         }
     }
