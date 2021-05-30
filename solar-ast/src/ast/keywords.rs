@@ -68,5 +68,9 @@ keyword!(Then, "then");
 keyword!(ThinArrow, "->");
 keyword!(Type, "type");
 keyword!(When, "when");
+keyword!(Else, "else");
 keyword!(Where, "where");
 keyword!(InlineExpressionStart, "$");
+// TODO these must be delimited
+keyword!(True, "true");
+keyword!(False, "false");
