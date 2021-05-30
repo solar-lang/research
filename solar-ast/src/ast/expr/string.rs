@@ -9,14 +9,14 @@ use nom::{
 };
 
 pub struct StringLiteral<'a> {
-    span: &'a str,
-    value: String,
+    pub span: &'a str,
+    pub value: String,
 }
 
 impl<'a> Parse<'a> for StringLiteral<'a> {
     fn parse(input: &'a str) -> Res<'a, Self> {
         let (rest, string) = verify(IString::parse, |istr| {
-            for part in istr.parts {
+            for part in istr.parts.iter() {
                 match part {
                     StringPart::InlineExpression(_) => return false,
                     _ => continue,
@@ -77,7 +77,7 @@ fn parse_unicode(input: &str) -> nom::IResult<&str, char> {
     map_opt(parse_u32, |value| std::char::from_u32(value))(input)
 }
 
-struct InlineExpression<'a> {
+pub struct InlineExpression<'a> {
     pub span: &'a str,
     pub expr: FullExpression<'a>,
 }

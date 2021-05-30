@@ -1,6 +1,7 @@
 mod block;
 mod literal;
 mod string;
+mod when;
 pub use string::*;
 pub mod full;
 pub use block::BlockExpression;
@@ -14,10 +15,10 @@ use nom::{
     sequence::{delimited, pair, preceded, terminated},
 };
 
-use crate::ast::expr::when::When;
 use crate::ast::identifier::{FullIdentifier, Identifier};
 use crate::{ast::*, parse::*, util::*};
 use type_signature::TypeSignature;
+use when::When;
 
 /// Expressions
 /// The main element of the solar language
@@ -38,8 +39,8 @@ impl<'a> Parse<'a> for Expression<'a> {
 }
 
 pub enum Value<'a> {
-    Litaral(Literal<'a>),
-    String(IString<'a>),
+    Literal(Literal<'a>),
+    IString(IString<'a>),
     FullIdentifier(FullIdentifier<'a>),
     Closure(Closure<'a>),
     Array(Array<'a>),
@@ -52,20 +53,20 @@ pub enum Value<'a> {
 impl<'a> Parse<'a> for Value<'a> {
     fn parse(input: &'a str) -> Res<'a, Self> {
         alt((
-            Literal::parse,
-            IString::parse,
-            FullIdentifier::parse,
-            Closure::parse,
-            Array::parse,
-            Abs::parse,
-            Tuple::parse,
-            When::parse,
-            BlockExpression::parse,
+            map(Literal::parse, Value::Literal),
+            map(IString::parse, Value::IString),
+            map(FullIdentifier::parse, Value::FullIdentifier),
+            map(Closure::parse, Value::Closure),
+            map(Array::parse, Value::Array),
+            map(Abs::parse, Value::Abs),
+            map(Tuple::parse, Value::Tuple),
+            map(When::parse, Value::When),
+            map(BlockExpression::parse, Value::BlockExpression),
         ))(input)
     }
 }
 
-struct Abs<'a> {
+pub struct Abs<'a> {
     pub span: &'a str,
     pub expr: FullExpression<'a>,
 }
@@ -84,7 +85,7 @@ impl<'a> Parse<'a> for Abs<'a> {
 }
 
 // may as well just be some parenthesis
-struct Tuple<'a> {
+pub struct Tuple<'a> {
     pub span: &'a str,
     pub values: Vec<FullExpression<'a>>,
 }
@@ -160,114 +161,6 @@ impl<'a> Parse<'a> for FunctionArg<'a> {
         let span = unsafe { from_to(input, rest) };
 
         Ok((rest, FunctionArg { span, name, value }))
-    }
-}
-// NOTE: Quite complicated, expect iterative changes
-mod when {
-    use super::*;
-
-    pub enum ParenGuard<'a> {
-        Literal(Literal<'a>),
-        VariableBinding(Identifier<'a>),
-        Paren(Guard<'a>),
-    }
-
-    impl<'a> Parse<'a> for ParenGuard<'a> {
-        fn parse(input: &'a str) -> Res<'a, Self> {
-            todo!()
-        }
-    }
-
-    pub struct ArrayGuard<'a> {
-        pub span: &'a str,
-        pub subguards: Vec<Guard<'a>>,
-        pub rest: Option<Identifier<'a>>,
-    }
-    impl<'a> Parse<'a> for ArrayGuard<'a> {
-        fn parse(input: &'a str) -> Res<'a, Self> {
-            todo!()
-        }
-    }
-
-    pub struct ObjectGuard<'a> {
-        pub span: &'a str,
-        pub struct_identifier: FullIdentifier<'a>,
-        pub fields: Vec<(Identifier<'a>, ParenGuard<'a>)>,
-    }
-    impl<'a> Parse<'a> for ObjectGuard<'a> {
-        fn parse(input: &'a str) -> Res<'a, Self> {
-            todo!()
-        }
-    }
-
-    pub struct TupleGuard<'a> {
-        pub span: &'a str,
-        pub values: Vec<Guard<'a>>,
-    }
-    impl<'a> Parse<'a> for TupleGuard<'a> {
-        fn parse(input: &'a str) -> Res<'a, Self> {
-            todo!()
-        }
-    }
-
-    pub enum Guard<'a> {
-        Literal(Literal<'a>),
-        ObjectGuard(ObjectGuard<'a>),
-        ArrayGuard(ArrayGuard<'a>),
-        TupleGuard(TupleGuard<'a>),
-        VariableBinding(Identifier<'a>),
-    }
-    impl<'a> Parse<'a> for Guard<'a> {
-        fn parse(input: &'a str) -> Res<'a, Self> {
-            todo!()
-        }
-    }
-
-    pub struct Branch<'a> {
-        pub span: &'a str,
-        pub guard: Guard<'a>,
-        pub then: FullExpression<'a>,
-    }
-    impl<'a> Parse<'a> for Branch<'a> {
-        fn parse(input: &'a str) -> Res<'a, Self> {
-            let (rest, _) = keywords::Is::parse(input)?;
-            let (rest, guard) = Guard::parse_ws(rest)?;
-            let (rest, _) = keywords::Then::parse_ws(rest)?;
-            let (rest, then) = FullExpression::parse_ws(rest)?;
-
-            let span = unsafe { from_to(input, rest) };
-
-            Ok((rest, Branch { span, guard, then }))
-        }
-    }
-
-    pub struct When<'a> {
-        pub span: &'a str,
-        pub condition: FullExpression<'a>,
-        pub branches: Vec<Branch<'a>>,
-        pub else_clause: Option<FullExpression<'a>>,
-    }
-
-    impl<'a> Parse<'a> for When<'a> {
-        fn parse(input: &'a str) -> Res<'a, Self> {
-            let (rest, _) = keywords::When::parse(input)?;
-            let (rest, condition) = FullExpression::parse_ws(rest)?;
-            let (rest, branches) = many1(Branch::parse_ws)(rest)?;
-            let (rest, else_clause) =
-                opt(preceded(keywords::Else::parse_ws, FullExpression::parse_ws))(rest)?;
-
-            let span = unsafe { from_to(input, rest) };
-
-            Ok((
-                rest,
-                When {
-                    span,
-                    condition,
-                    branches,
-                    else_clause,
-                },
-            ))
-        }
     }
 }
 

@@ -1,7 +1,9 @@
 -- vim: syntax=haskell:
 
--- literals or guard in parenthesis
-parenguard
+-- sugar to assert fields of a struct without the
+-- trouble to write (x) or (7)
+-- and instead directly write down the literal x or 7
+subfieldguard
     / literal
     / identifer -- variable binding
     /   "(" guard ")"
@@ -9,18 +11,20 @@ parenguard
 
 arrayguard
     - "[" -- while parenthesis are discouraged when possible, this helps distinct things visually
-    - (whenguard ** ",")
-    - (identifer "..")?
+    - (guard ** ",")
+    - ("," identifer "..")?
+    -- trailing commata are okay
+    - ","?
     - "]"
 
 
 objectguard
     - fullidentifier
-    - (identifier "=" whenguard )*
+    - (identifier "=" subfieldguard )*
 
 tupleguard
     - "("
-    - whenguard ** ","
+    - guard ** ","
     - ")"
 
 guard
@@ -32,7 +36,7 @@ guard
 
 branch
     - "is"
-    - whenguard
+    - guard
     - "then"
     - fullexpression)
 
