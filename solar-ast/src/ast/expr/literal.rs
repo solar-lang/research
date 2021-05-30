@@ -89,7 +89,7 @@ fn hex(i: &str) -> Res<Int> {
         tag("0x"),
         take_while1(|c| number(c) || c >= 'A' && c <= 'F' || c >= 'a' && c <= 'f'),
     )(i)?;
-    let (rest, type_suffix) = parse_type_suffix(i)?;
+    let (rest, type_suffix) = parse_type_suffix(rest)?;
     let span = unsafe { from_to(i, rest) };
 
     Ok((
@@ -106,7 +106,7 @@ fn hex(i: &str) -> Res<Int> {
 /// parses an octal number
 fn oct(i: &str) -> Res<Int> {
     let (rest, digits) = preceded(tag("0o"), take_while1(|c| c >= '0' && c <= '7'))(i)?;
-    let (rest, type_suffix) = parse_type_suffix(i)?;
+    let (rest, type_suffix) = parse_type_suffix(rest)?;
     let span = unsafe { from_to(i, rest) };
 
     Ok((
@@ -123,7 +123,7 @@ fn oct(i: &str) -> Res<Int> {
 /// parses an binary number
 fn bin(i: &str) -> Res<Int> {
     let (rest, digits) = preceded(tag("0b"), take_while1(|c| c == '0' || c == '1'))(i)?;
-    let (rest, type_suffix) = parse_type_suffix(i)?;
+    let (rest, type_suffix) = parse_type_suffix(rest)?;
     let span = unsafe { from_to(i, rest) };
 
     Ok((
@@ -140,13 +140,13 @@ fn bin(i: &str) -> Res<Int> {
 /// parses a decimal
 fn dec(i: &str) -> Res<Int> {
     let (rest, digits) = take_while1(number)(i)?;
-    let (rest, type_suffix) = parse_type_suffix(i)?;
+    let (rest, type_suffix) = parse_type_suffix(rest)?;
     let span = unsafe { from_to(i, rest) };
 
     Ok((
         rest,
         Int {
-            span: digits,
+            span,
             radix: 10,
             digits,
             type_suffix,

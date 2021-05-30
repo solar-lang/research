@@ -82,7 +82,7 @@ impl<'a> Parse<'a> for If<'a> {
         // do
         let (rest, _) = keywords::Do::parse_ws(rest)?;
         // {<expr> ...}
-        let (rest, then) = BlockExpression::parse_ws(input)?;
+        let (rest, then) = BlockExpression::parse_ws(rest)?;
 
         let span = unsafe { from_to(input, rest) };
 
@@ -117,7 +117,7 @@ impl<'a> Parse<'a> for For<'a> {
         // do
         let (rest, _) = keywords::Do::parse_ws(rest)?;
         // {<expr> ...}
-        let (rest, body) = BlockExpression::parse_ws(input)?;
+        let (rest, body) = BlockExpression::parse_ws(rest)?;
 
         let span = unsafe { from_to(input, rest) };
 
@@ -143,7 +143,7 @@ impl<'a> Parse<'a> for Loop<'a> {
         // loop
         let (rest, _) = keywords::Loop::parse(input)?;
         // {<expr> ...}
-        let (rest, body) = BlockExpression::parse_ws(input)?;
+        let (rest, body) = BlockExpression::parse_ws(rest)?;
 
         let span = unsafe { from_to(input, rest) };
 

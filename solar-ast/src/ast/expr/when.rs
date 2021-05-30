@@ -1,8 +1,8 @@
 use nom::{
     branch::alt,
     combinator::{map, opt},
-    multi::{many0, many1, separated_list0},
-    sequence::{delimited, pair, preceded, terminated},
+    multi::{many0, many1},
+    sequence::{delimited, pair, preceded},
 };
 
 use super::*;

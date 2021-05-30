@@ -11,8 +11,8 @@ pub use literal::Literal;
 use nom::{
     branch::alt,
     combinator::{map, opt},
-    multi::{many0, many1, separated_list0},
-    sequence::{delimited, pair, preceded, terminated},
+    multi::{many0, separated_list0},
+    sequence::{delimited, pair, terminated},
 };
 
 use crate::ast::identifier::{FullIdentifier, Identifier};
@@ -132,7 +132,7 @@ pub struct FunctionCall<'a> {
 impl<'a> Parse<'a> for FunctionCall<'a> {
     fn parse(input: &'a str) -> Res<'a, Self> {
         let (rest, function_name) = FullIdentifier::parse(input)?;
-        let (rest, args) = many0(FunctionArg::parse_ws)(input)?;
+        let (rest, args) = many0(FunctionArg::parse_ws)(rest)?;
 
         let span = unsafe { from_to(input, rest) };
 
@@ -156,7 +156,7 @@ pub struct FunctionArg<'a> {
 impl<'a> Parse<'a> for FunctionArg<'a> {
     fn parse(input: &'a str) -> Res<'a, Self> {
         let (rest, name) = opt(terminated(Identifier::parse, keywords::Assign::parse_ws))(input)?;
-        let (rest, value) = Value::parse_ws(input)?;
+        let (rest, value) = Value::parse_ws(rest)?;
 
         let span = unsafe { from_to(input, rest) };
 
