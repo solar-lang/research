@@ -2,11 +2,8 @@
 
 -- literals or guard in parenthesis
 parenguard
-    / bool
-    / int
-    / float
-    / string
-    / literal -- variable binding
+    / literal
+    / identifer -- variable binding
     /   "(" guard ")"
 
 
@@ -41,5 +38,5 @@ branch
 
 when
     - "when" fullexpression
-    - branch*
+    - branch+
     - ("else" fullexpression)?
