@@ -46,9 +46,14 @@ mod tests {
     fn full_expr() {
         let input = [
             "x",
-            "x + y",
+            "(x)",
             "x+y",
+            "x + y",
             "x+y+z",
+            "x+y ++ z",
+            "x*y + z",
+            "x+y+z+9",
+            "x+y+z+9 + 10",
             "(x+y)*7",
             "(x+y) : double",
             "n^8",
@@ -101,7 +106,7 @@ macro_rules! create_ast_expr {
                 let (rest, left) = <$next_struct>::parse(input)?;
 
                 if let Ok((rest, _)) = <$separator>::parse_ws(rest) {
-                    let (rest, right) = <$next_struct>::parse_ws(rest)?;
+                    let (rest, right) = Self::parse_ws(rest)?;
                     let span = unsafe { from_to(input, rest) };
                     let left: Box<FullExpression<'a>> = Box::new(left.into());
                     let right: Box<FullExpression<'a>> = Box::new(right.into());
@@ -117,7 +122,7 @@ macro_rules! create_ast_expr {
 
 create_ast_expr!(And, keywords::And, Or);
 create_ast_expr!(Or, keywords::Or, Concat);
-create_ast_expr!(Concat, keywords::Concat, Pipe);
+create_ast_expr!(Concat, keywords::Concat, Add);
 create_ast_expr!(Add, keywords::Add, Subtract);
 create_ast_expr!(Subtract, keywords::Subtract, Multiply);
 create_ast_expr!(Multiply, keywords::Multiply, Divide);
