@@ -35,6 +35,7 @@ mod literal_tests {
         );
     }
 
+    #[test]
     fn bool_false() {
         assert_eq!(
             Literal::parse("false "),

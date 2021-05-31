@@ -50,11 +50,20 @@ pub enum Value<'a> {
     Tuple(Tuple<'a>),
     When(When<'a>),
     BlockExpression(BlockExpression<'a>),
+
+    // √x^2    == (√x)^2
+    // -x^2    == (-x)^2
+    // !x^2    == (!x)^2
+    Sqrt(Sqrt<'a>),
+    Negate(Negate<'a>),
+    Not(Not<'a>),
+
+    Power(Power<'a>),
 }
 
 impl<'a> Parse<'a> for Value<'a> {
     fn parse(input: &'a str) -> Res<'a, Self> {
-        alt((
+        let (rest, value) = alt((
             map(Literal::parse, Value::Literal),
             map(IString::parse, Value::IString),
             map(FullIdentifier::parse, Value::FullIdentifier),
@@ -64,10 +73,96 @@ impl<'a> Parse<'a> for Value<'a> {
             map(Tuple::parse, Value::Tuple),
             map(When::parse, Value::When),
             map(BlockExpression::parse, Value::BlockExpression),
-        ))(input)
+            // unary expressions
+            map(Sqrt::parse, Value::Sqrt),
+            map(Negate::parse, Value::Negate),
+            map(Not::parse, Value::Not),
+        ))(input)?;
+
+        // TODO move to SQRT,NEGATE,NOT
+        // There's an exponent coming
+        if let Ok((rest, _)) = keywords::Power::parse_ws(rest) {
+            let (rest, exponent) = Value::parse_ws(rest)?;
+            let span = unsafe { from_to(input, rest) };
+
+            let value = Box::new(value);
+            let exponent = Box::new(exponent);
+
+            return Ok((
+                rest,
+                Value::Power(Power {
+                    span,
+                    value,
+                    exponent,
+                }),
+            ));
+        }
+
+        Ok((rest, value))
     }
 }
 
+// Parsing is implemented implicitly in Value
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Power<'a> {
+    pub span: &'a str,
+    pub value: Box<Value<'a>>,
+    pub exponent: Box<Value<'a>>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Negate<'a> {
+    pub span: &'a str,
+    pub expr: Box<Value<'a>>,
+}
+
+impl<'a> Parse<'a> for Negate<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        let (rest, _) = keywords::Minus::parse(input)?;
+        let (rest, expr) = Value::parse_ws(rest)?;
+
+        let span = unsafe { from_to(input, rest) };
+        let expr = Box::new(expr);
+
+        Ok((rest, Negate { span, expr }))
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Not<'a> {
+    pub span: &'a str,
+    pub expr: Box<Value<'a>>,
+}
+
+impl<'a> Parse<'a> for Not<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        let (rest, _) = keywords::Minus::parse(input)?;
+        let (rest, expr) = Value::parse_ws(rest)?;
+
+        let span = unsafe { from_to(input, rest) };
+        let expr = Box::new(expr);
+
+        Ok((rest, Not { span, expr }))
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Sqrt<'a> {
+    pub span: &'a str,
+    pub expr: Box<Value<'a>>,
+}
+
+impl<'a> Parse<'a> for Sqrt<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        let (rest, _) = keywords::Sqrt::parse(input)?;
+        let (rest, expr) = Value::parse_ws(rest)?;
+
+        let span = unsafe { from_to(input, rest) };
+        let expr = Box::new(expr);
+
+        Ok((rest, Self { span, expr }))
+    }
+}
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Abs<'a> {
     pub span: &'a str,
@@ -117,7 +212,10 @@ impl<'a> Parse<'a> for Array<'a> {
     fn parse(input: &'a str) -> Res<'a, Self> {
         let (rest, values) = delimited(
             keywords::BracketOpen::parse,
-            many0(FullExpression::parse_ws),
+            terminated(
+                separated_list0(keywords::Comma::parse_ws, FullExpression::parse_ws),
+                opt(keywords::Comma::parse_ws),
+            ),
             keywords::BracketClose::parse_ws,
         )(input)?;
         let span = unsafe { from_to(input, rest) };
@@ -126,11 +224,11 @@ impl<'a> Parse<'a> for Array<'a> {
     }
 }
 
+// Note: may as well be a variable instaed of a function name
+// Note: may be field access. Currently there is no distinction in the parser.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FunctionCall<'a> {
     pub span: &'a str,
-    // Note: may as well be a variable
-    // Note: may be field access. Currently there is no distinction
     pub function_name: FullIdentifier<'a>,
     pub args: Vec<FunctionArg<'a>>,
 }
@@ -266,4 +364,6 @@ mod tests {
             "(x Float, y Float, info)"
         ]
     );
+
+    derive_tests!(Array, arrays, ["[]", "[1]", "[ 1,2,3 ]", "[1, 2, ]"]);
 }
