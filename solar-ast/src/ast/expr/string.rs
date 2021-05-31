@@ -8,6 +8,7 @@ use nom::{
     sequence::{delimited, preceded},
 };
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct StringLiteral<'a> {
     pub span: &'a str,
     pub value: String,
@@ -77,6 +78,7 @@ fn parse_unicode(input: &str) -> nom::IResult<&str, char> {
     map_opt(parse_u32, |value| std::char::from_u32(value))(input)
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct InlineExpression<'a> {
     pub span: &'a str,
     pub expr: FullExpression<'a>,
@@ -133,6 +135,7 @@ fn parse_literal2(i: &str) -> nom::IResult<&str, &str> {
     verify(matcher, |s: &str| !s.is_empty())(i)
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum StringPart<'a> {
     InlineExpression(InlineExpression<'a>),
     Char(char),
@@ -159,6 +162,7 @@ impl<'a> StringPart<'a> {
 }
 
 /// String with interpolation
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct IString<'a> {
     pub span: &'a str,
     pub parts: Vec<StringPart<'a>>,

@@ -9,11 +9,44 @@ use nom::{
 use crate::{ast::*, parse::*, util::*};
 use expr::StringLiteral;
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Literal<'a> {
     Bool { span: &'a str, value: bool },
     Int(Int<'a>),
     Float(&'a str),
     StringLiteral(StringLiteral<'a>),
+}
+
+#[cfg(test)]
+mod literal_tests {
+    use super::*;
+
+    #[test]
+    fn bool_true() {
+        assert_eq!(
+            Literal::parse("true "),
+            Ok((
+                " ",
+                Literal::Bool {
+                    span: "true",
+                    value: true
+                }
+            ))
+        );
+    }
+
+    fn bool_false() {
+        assert_eq!(
+            Literal::parse("false "),
+            Ok((
+                " ",
+                Literal::Bool {
+                    span: "false",
+                    value: false
+                }
+            ))
+        );
+    }
 }
 
 impl<'a> Parse<'a> for Literal<'a> {
@@ -41,6 +74,7 @@ fn parse_boolean(input: &str) -> Res<Literal> {
     alt((t, f))(input)
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Int<'a> {
     pub span: &'a str,
     pub radix: u8,
@@ -173,7 +207,7 @@ fn parse_float<'a>(input: &'a str) -> Res<'a, &'a str> {
 }
 
 #[cfg(test)]
-mod tests {
+mod float_tests {
     use super::*;
 
     #[test]

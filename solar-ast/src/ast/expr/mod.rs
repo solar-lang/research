@@ -24,6 +24,7 @@ use when::When;
 /// The main element of the solar language
 
 //  pub span: &'a str,
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Expression<'a> {
     FunctionCall(FunctionCall<'a>),
     Value(Value<'a>),
@@ -38,6 +39,7 @@ impl<'a> Parse<'a> for Expression<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Value<'a> {
     Literal(Literal<'a>),
     IString(IString<'a>),
@@ -66,6 +68,7 @@ impl<'a> Parse<'a> for Value<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Abs<'a> {
     pub span: &'a str,
     pub expr: FullExpression<'a>,
@@ -85,6 +88,7 @@ impl<'a> Parse<'a> for Abs<'a> {
 }
 
 // may as well just be some parenthesis
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Tuple<'a> {
     pub span: &'a str,
     pub values: Vec<FullExpression<'a>>,
@@ -103,6 +107,7 @@ impl<'a> Parse<'a> for Tuple<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Array<'a> {
     pub span: &'a str,
     pub values: Vec<FullExpression<'a>>,
@@ -121,6 +126,7 @@ impl<'a> Parse<'a> for Array<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FunctionCall<'a> {
     pub span: &'a str,
     // Note: may as well be a variable
@@ -147,6 +153,7 @@ impl<'a> Parse<'a> for FunctionCall<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FunctionArg<'a> {
     pub span: &'a str,
     pub name: Option<Identifier<'a>>,
@@ -164,6 +171,7 @@ impl<'a> Parse<'a> for FunctionArg<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Closure<'a> {
     pub span: &'a str,
     pub arguments: ClosureArgsKind<'a>,
@@ -192,6 +200,7 @@ impl<'a> Parse<'a> for Closure<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ClosureArgsKind<'a> {
     SingleArgForm(Identifier<'a>),
     NormalForm(ClosureArgs<'a>),
@@ -206,6 +215,7 @@ impl<'a> Parse<'a> for ClosureArgsKind<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ClosureArgs<'a> {
     pub span: &'a str,
     pub args: Vec<(Identifier<'a>, Option<TypeSignature<'a>>)>,

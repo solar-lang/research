@@ -10,6 +10,7 @@ use super::*;
 /// sugar to assert fields of a struct without the
 /// trouble to write (x) or (7)
 /// and instead directly write down the literal
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum SubfieldGuard<'a> {
     Literal(Literal<'a>),
     VariableBinding(Identifier<'a>),
@@ -30,6 +31,7 @@ impl<'a> Parse<'a> for SubfieldGuard<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ArrayGuard<'a> {
     pub span: &'a str,
     pub subguards: Vec<Guard<'a>>,
@@ -59,6 +61,7 @@ impl<'a> Parse<'a> for ArrayGuard<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ObjectGuard<'a> {
     pub span: &'a str,
     pub struct_identifier: FullIdentifier<'a>,
@@ -81,6 +84,7 @@ impl<'a> Parse<'a> for ObjectGuard<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TupleGuard<'a> {
     pub span: &'a str,
     pub values: Vec<Guard<'a>>,
@@ -100,6 +104,7 @@ impl<'a> Parse<'a> for TupleGuard<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Guard<'a> {
     Literal(Literal<'a>),
     ObjectGuard(ObjectGuard<'a>),
@@ -119,6 +124,7 @@ impl<'a> Parse<'a> for Guard<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Branch<'a> {
     pub span: &'a str,
     pub guard: Guard<'a>,
@@ -137,6 +143,7 @@ impl<'a> Parse<'a> for Branch<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct When<'a> {
     pub span: &'a str,
     pub condition: FullExpression<'a>,

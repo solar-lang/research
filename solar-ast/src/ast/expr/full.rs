@@ -3,6 +3,7 @@
 use crate::ast::expr::{Expression, FunctionCall};
 use crate::{ast::*, parse::*, util::*};
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum FullExpression<'a> {
     And(And<'a>),
     Or(Or<'a>),
@@ -51,6 +52,7 @@ mod tests {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Pipe<'a> {
     pub span: &'a str,
     pub expr: Box<Expression<'a>>,
@@ -94,6 +96,8 @@ impl<'a> Into<FullExpression<'a>> for Pipe<'a> {
 /// Used in Full Expression
 macro_rules! create_ast_expr {
     ($name:ident, $separator:ty, $next_struct:ty) => {
+
+        #[derive(Clone, Debug, Eq, PartialEq)]
         pub struct $name<'a> {
             pub span: &'a str,
             pub left: Box<FullExpression<'a>>,
@@ -133,6 +137,7 @@ create_ast_expr!(Divide, keywords::Divide, Not);
 create_ast_expr!(Not, keywords::Not, Power);
 create_ast_expr!(Power, keywords::Power, Negate);
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Negate<'a> {
     pub span: &'a str,
     pub expr: Box<Expression<'a>>,
@@ -156,6 +161,7 @@ impl<'a> Into<FullExpression<'a>> for Negate<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Sqrt<'a> {
     pub span: &'a str,
     pub expr: Box<Expression<'a>>,

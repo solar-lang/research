@@ -15,6 +15,7 @@ use nom::{
     sequence::{delimited, pair, preceded},
 };
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum FunctionOrTypeOrTest<'a> {
     Function(Function<'a>),
     TypeDecl(TypeDecl<'a>),
@@ -42,6 +43,7 @@ impl<'a> Parse<'a> for FunctionOrTypeOrTest<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Function<'a> {
     pub span: &'a str,
     pub generic_stub: Option<GenericStub<'a>>,
@@ -98,6 +100,7 @@ impl<'a> Parse<'a> for Function<'a> {
 }
 
 // generic A, B where C = add(A, B)
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct GenericStub<'a> {
     pub span: &'a str,
     pub generic_arguments: Vec<Identifier<'a>>,
@@ -129,6 +132,7 @@ impl<'a> Parse<'a> for GenericStub<'a> {
 }
 
 // C = mul(A, B)
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct WhereClause<'a> {
     pub span: &'a str,
     pub generic_destination: Identifier<'a>,
@@ -162,6 +166,7 @@ impl<'a> Parse<'a> for WhereClause<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Test<'a> {
     pub span: &'a str,
     pub name: StringLiteral<'a>,
@@ -189,6 +194,7 @@ impl<'a> Parse<'a> for Test<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TypeDecl<'a> {
     pub span: &'a str,
     pub name: Identifier<'a>,
@@ -217,6 +223,7 @@ impl<'a> Parse<'a> for TypeDecl<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct GenericArgsDecl<'a> {
     pub span: &'a str,
     pub generic_arguments: Vec<Identifier<'a>>,
@@ -246,6 +253,7 @@ impl<'a> Parse<'a> for GenericArgsDecl<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum EnumOrStructFields<'a> {
     EnumFields(Vec<EnumField<'a>>),
     StructFields(Vec<StructField<'a>>),
@@ -263,6 +271,7 @@ impl<'a> Parse<'a> for EnumOrStructFields<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct EnumField<'a> {
     pub span: &'a str,
     pub name: Identifier<'a>,
@@ -289,6 +298,7 @@ impl<'a> Parse<'a> for EnumField<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct StructField<'a> {
     pub span: &'a str,
     pub public: bool,
