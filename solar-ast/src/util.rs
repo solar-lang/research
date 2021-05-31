@@ -23,12 +23,12 @@ pub fn joined_by<'a, I, T>(
         res.push(elem);
 
         loop {
-            match separator(rest) {
-                Ok((new_rest, _)) => rest = new_rest,
+            let new_rest = match separator(rest) {
+                Ok((new_rest, _)) => new_rest,
                 _ => break,
-            }
+            };
 
-            match parser(rest) {
+            match parser(new_rest) {
                 Ok((new_rest, elem)) => {
                     res.push(elem);
                     rest = new_rest;
@@ -50,8 +50,8 @@ mod tests {
         use nom::character::complete::char;
         let input = "1,1,1,";
         let (rest, result) = joined_by(char('1'), char(','))(input).unwrap();
-        assert_eq!(rest, ",");
         assert_eq!(result, vec!['1', '1', '1']);
+        assert_eq!(rest, ",");
     }
 
     #[test]
