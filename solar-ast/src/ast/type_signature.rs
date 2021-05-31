@@ -2,6 +2,7 @@ use crate::ast::identifier::FullIdentifier;
 
 use crate::{ast::*, parse::*, util::*};
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TypeSignature<'a> {
     pub span: &'a str,
     pub type_kind: TypeKind<'a>,
@@ -43,6 +44,7 @@ impl<'a> Parse<'a> for TypeSignature<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum TypeKind<'a> {
     DirectType(DirectType<'a>),
     TupleType(TupleType<'a>),
@@ -61,6 +63,7 @@ impl<'a> Parse<'a> for TypeKind<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DirectType<'a> {
     pub span: &'a str,
     // may contain (relative) path to type
@@ -98,6 +101,7 @@ impl<'a> Parse<'a> for DirectType<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TupleType<'a> {
     pub span: &'a str,
     // may contain (relative) path to type
@@ -122,6 +126,7 @@ impl<'a> Parse<'a> for TupleType<'a> {
 }
 
 // Just the same as Vec <generic_argument>
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct VectorType<'a> {
     pub span: &'a str,
     pub generic_argument: Box<TypeSignature<'a>>,

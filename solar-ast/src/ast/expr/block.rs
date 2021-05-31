@@ -9,6 +9,7 @@ use crate::{ast::*, parse::*, util::*};
 use expr::FullExpression;
 use identifier::Identifier;
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct BlockExpression<'a> {
     pub span: &'a str,
     pub parts: Vec<BlockExpressionPart<'a>>,
@@ -27,6 +28,7 @@ impl<'a> Parse<'a> for BlockExpression<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum BlockExpressionPart<'a> {
     Let(Let<'a>),
     Return(Return<'a>),
@@ -67,6 +69,7 @@ impl<'a> Parse<'a> for BlockExpressionPart<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct If<'a> {
     pub span: &'a str,
     pub condition: FullExpression<'a>,
@@ -97,6 +100,7 @@ impl<'a> Parse<'a> for If<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct For<'a> {
     pub span: &'a str,
     pub variable: Identifier<'a>,
@@ -133,6 +137,7 @@ impl<'a> Parse<'a> for For<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Loop<'a> {
     pub span: &'a str,
     pub body: BlockExpression<'a>,
@@ -151,6 +156,7 @@ impl<'a> Parse<'a> for Loop<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Let<'a> {
     pub span: &'a str,
     pub identifier: Identifier<'a>,
@@ -181,6 +187,7 @@ impl<'a> Parse<'a> for Let<'a> {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Return<'a> {
     pub span: &'a str,
     pub value: Option<FullExpression<'a>>,
