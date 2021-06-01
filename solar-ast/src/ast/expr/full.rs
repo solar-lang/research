@@ -11,6 +11,7 @@ pub enum FullExpression<'a> {
 
     Add(Add<'a>),
     Subtract(Subtract<'a>),
+
     Multiply(Multiply<'a>),
     Divide(Divide<'a>),
 
@@ -46,6 +47,9 @@ mod tests {
     fn full_expr() {
         let input = [
             "x",
+            "-x",
+            "(-x)",
+            "a + -x",
             "(x)",
             "x+y",
             "x + y",

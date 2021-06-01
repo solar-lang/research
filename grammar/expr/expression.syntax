@@ -21,13 +21,9 @@ fullexpression
     {-- ...
         ++
         +
-        -
+        a - a
         *
         /
-        a^a
-        √a
-        -a
-        !a
         a:a
     - fe1 (".", fe1)* -- see: discussion/dot-openrator.sol
         <expression>
@@ -55,6 +51,11 @@ value
     / tuple
     / when
     / blockexpression
+    /  a^a
+    -- note: NEGATE may not live here. Would confuse operator precedence
+    --  -a
+    /  !a
+    /  √a
     -- Might be included. Complicates things. Hard to read for beginners
     -- / "$" fullexpression
 

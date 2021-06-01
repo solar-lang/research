@@ -55,7 +55,6 @@ pub enum Value<'a> {
     // -x^2    == (-x)^2
     // !x^2    == (!x)^2
     Sqrt(Sqrt<'a>),
-    Negate(Negate<'a>),
     Not(Not<'a>),
 
     Power(Power<'a>),
@@ -75,7 +74,6 @@ impl<'a> Parse<'a> for Value<'a> {
             map(BlockExpression::parse, Value::BlockExpression),
             // unary expressions
             map(Sqrt::parse, Value::Sqrt),
-            map(Negate::parse, Value::Negate),
             map(Not::parse, Value::Not),
         ))(input)?;
 
@@ -108,24 +106,6 @@ pub struct Power<'a> {
     pub span: &'a str,
     pub value: Box<Value<'a>>,
     pub exponent: Box<Value<'a>>,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct Negate<'a> {
-    pub span: &'a str,
-    pub expr: Box<Value<'a>>,
-}
-
-impl<'a> Parse<'a> for Negate<'a> {
-    fn parse(input: &'a str) -> Res<'a, Self> {
-        let (rest, _) = keywords::Minus::parse(input)?;
-        let (rest, expr) = Value::parse_ws(rest)?;
-
-        let span = unsafe { from_to(input, rest) };
-        let expr = Box::new(expr);
-
-        Ok((rest, Negate { span, expr }))
-    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -193,7 +173,7 @@ impl<'a> Parse<'a> for Tuple<'a> {
     fn parse(input: &'a str) -> Res<'a, Self> {
         let (rest, values) = delimited(
             keywords::ParenOpen::parse,
-            many0(FullExpression::parse_ws),
+            separated_list0(keywords::Comma::parse_ws, FullExpression::parse_ws),
             keywords::ParenClose::parse_ws,
         )(input)?;
         let span = unsafe { from_to(input, rest) };
