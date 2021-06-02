@@ -24,7 +24,9 @@ fullexpression
         a - a
         *
         /
-        ^
+
+        ^   -- yeah. leave it in here. value::power has precedence
+            -- this is just because identifiers in the wild may get recognized as `functioncall`
         a:a
     - fe1 (".", fe1)* -- see: discussion/dot-openrator.sol
         <expression>
