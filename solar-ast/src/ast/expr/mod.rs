@@ -39,6 +39,49 @@ impl<'a> Parse<'a> for Expression<'a> {
     }
 }
 
+#[cfg(test)]
+mod value_tests {
+    use super::*;
+
+    fn parse(input: &str) -> Value {
+        Value::parse_ws(input).unwrap().1
+    }
+
+    #[test]
+    fn exponent1() {
+        let input = "a^b ";
+        let (rest, value) = Value::parse(input).unwrap();
+        assert_eq!(
+            value,
+            Value::Power(Power {
+                span: "a^b",
+                value: Box::new(parse("a")),
+                exponent: Box::new(parse("b")),
+            })
+        );
+
+        assert_eq!(rest, " ");
+    }
+
+    #[test]
+    fn exponent2() {
+        // a^b^c must equal a^(b^c)
+        let input = "a^b^2 ";
+        let (rest, value) = Value::parse(input).unwrap();
+        assert_eq!(
+            value,
+            Value::Power(Power {
+                span: "a^b^2",
+                value: Box::new(parse("a")),
+                exponent: Box::new(parse("b^2")),
+            })
+        );
+
+        assert_eq!(rest, " ");
+    }
+
+
+}
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Value<'a> {
     Literal(Literal<'a>),
