@@ -221,8 +221,22 @@ mod tests {
         };
     }
 
-    derive_tests!(Return, return_expr, ["return", "return 7", "return None"]);
-    derive_tests!(If, if_expr, ["if true do {}", "if !true do { print x }"]);
-    derive_tests!(Loop, loop_expr, ["loop {}"]);
-    derive_tests!(Let, let_expr, ["let x = tag n"]);
+    #[test]
+    fn if_test1() {
+        let input = "if true do {something} ";
+        let (rest, statement) = If::parse(input).unwrap();
+        assert_eq!(statement,
+            If {
+                span: "if true do {something}",
+                condition: FullExpression::parse("true").unwrap().1,
+                then: BlockExpression::parse("{something}").unwrap().1,
+            }
+        );
+        assert_eq!(rest, " ");
+    }
+
+    derive_tests!(Return, return_statement, ["return", "return 7", "return None"]);
+    derive_tests!(If, if_statement, ["if !true do { print x }"]);
+    derive_tests!(Loop, loop_statement, ["loop {}"]);
+    derive_tests!(Let, let_statement, ["let x = tag n"]);
 }
