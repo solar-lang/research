@@ -129,8 +129,6 @@ impl<'a> Into<FullExpression<'a>> for Pipe<'a> {
 
 #[cfg(test)]
 mod tests {
-    use crate::ast::expr::{Power, Value};
-
     use super::*;
 
     fn parse(input: &str) -> FullExpression {
@@ -174,11 +172,11 @@ mod tests {
         let (rest, expr) = FullExpression::parse(input).unwrap();
         assert_eq!(
             expr,
-            FullExpression::Expression(Box::new(Expression::Value(Value::Power(Power {
+            FullExpression::Power(Power {
                 span: "a^b",
-                value: Box::new(Value::parse("a").unwrap().1),
-                exponent: Box::new(Value::parse("b").unwrap().1),
-            }))))
+                left: Box::new(parse("a")),
+                right: Box::new(parse("b")),
+            })
         );
         assert_eq!(rest, " ");
     }
@@ -189,11 +187,11 @@ mod tests {
         let (rest, expr) = FullExpression::parse(input).unwrap();
         assert_eq!(
             expr,
-            FullExpression::Expression(Box::new(Expression::Value(Value::Power(Power {
+            FullExpression::Power(Power {
                 span: "a^b^c",
-                value: Box::new(Value::parse("a").unwrap().1),
-                exponent: Box::new(Value::parse("b^c").unwrap().1),
-            }))))
+                left: Box::new(parse("a")),
+                right: Box::new(parse("b^c")),
+            })
         );
         assert_eq!(rest, " ");
     }
