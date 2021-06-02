@@ -24,6 +24,7 @@ fullexpression
         a - a
         *
         /
+        ^
         a:a
     - fe1 (".", fe1)* -- see: discussion/dot-openrator.sol
         <expression>

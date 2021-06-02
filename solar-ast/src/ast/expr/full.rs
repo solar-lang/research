@@ -15,9 +15,8 @@ pub enum FullExpression<'a> {
     Multiply(Multiply<'a>),
     Divide(Divide<'a>),
 
-    // √x:n
-    // may not be
-    // √(x:n)
+    // Rarely used, because mostly Value::Power takes precedence.
+    Power(Power<'a>),
 
     // list : filter ft : map n * 3 ++ [end_elem]
     // <=>
@@ -86,7 +85,8 @@ create_ast_expr!(Concat, keywords::Concat, Add);
 create_ast_expr!(Add, keywords::Add, Subtract);
 create_ast_expr!(Subtract, keywords::Subtract, Multiply);
 create_ast_expr!(Multiply, keywords::Multiply, Divide);
-create_ast_expr!(Divide, keywords::Divide, Pipe);
+create_ast_expr!(Divide, keywords::Divide, Power);
+create_ast_expr!(Power, keywords::Power, Pipe);
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Pipe<'a> {
@@ -129,6 +129,8 @@ impl<'a> Into<FullExpression<'a>> for Pipe<'a> {
 
 #[cfg(test)]
 mod tests {
+    use crate::ast::expr::{Power, Value};
+
     use super::*;
 
     fn parse(input: &str) -> FullExpression {
@@ -167,13 +169,34 @@ mod tests {
     }
 
     #[test]
-    fn cheap_exponent() {
-        let input = "a^b";
-        let (rest, _) = FullExpression::parse(input).unwrap();
-        assert_eq!(rest, "");
+    fn exponent1() {
+        let input = "a^b ";
+        let (rest, expr) = FullExpression::parse(input).unwrap();
+        assert_eq!(
+            expr,
+            FullExpression::Expression(Box::new(Expression::Value(Value::Power(Power {
+                span: "a^b",
+                value: Box::new(Value::parse("a").unwrap().1),
+                exponent: Box::new(Value::parse("b").unwrap().1),
+            }))))
+        );
+        assert_eq!(rest, " ");
     }
 
-
+    #[test]
+    fn exponent_right_associative() {
+        let input = "a^b^c ";
+        let (rest, expr) = FullExpression::parse(input).unwrap();
+        assert_eq!(
+            expr,
+            FullExpression::Expression(Box::new(Expression::Value(Value::Power(Power {
+                span: "a^b^c",
+                value: Box::new(Value::parse("a").unwrap().1),
+                exponent: Box::new(Value::parse("b^c").unwrap().1),
+            }))))
+        );
+        assert_eq!(rest, " ");
+    }
 
     #[test]
     fn cheap_tests() {
