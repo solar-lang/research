@@ -39,50 +39,6 @@ impl<'a> Parse<'a> for FullExpression<'a> {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn full_expr() {
-        let input = [
-            "x",
-            "-x",
-            "(-x)",
-            "a + -x",
-            "(x)",
-            "x+y",
-            "x + y",
-            "x+y+z",
-            "x+y ++ z",
-            "x*y + z",
-            "x+y+z+9",
-            "x+y+z+9 + 10",
-            "(x+y)*7",
-            "(x+y) : double",
-            "n^8",
-            "√2",
-            "-√2",
-            "n/8+9:something",
-            "list : filter ft : map n * 3 ++ [end_elem]",
-            "cos x*2",
-            "(cos x)*2",
-        ];
-
-        for i in input.iter() {
-            let (rest, _fe) = FullExpression::parse(i).unwrap();
-            assert_eq!(rest, "");
-        }
-    }
-
-    #[test]
-    fn pipe_test() {
-        let input = "[1, 2, 3] : map f : add √4";
-        let (rest, _expr) = FullExpression::parse(input).unwrap();
-        assert_eq!(rest, "");
-    }
-}
-
 trait ParseExpression<'a>
 where
     Self: Sized,
@@ -168,5 +124,61 @@ impl<'a> ParseExpression<'a> for Pipe<'a> {
 impl<'a> Into<FullExpression<'a>> for Pipe<'a> {
     fn into(self) -> FullExpression<'a> {
         FullExpression::Pipe(self)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // No negation considered in parsing thus far
+    #[test]
+    fn negation1() {
+        let input = "-√2";
+        let result = FullExpression::parse(input);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn negation2() {
+        let input = "a + -b";
+        let result = FullExpression::parse(input);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn full_expr() {
+        let input = [
+            "x",
+            "(x)",
+            "x+y",
+            "x + y",
+            "x+y+z",
+            "x+y ++ list",
+            "x*y + y",
+            "x+y+z+9",
+            "x+y+z+9 + 10",
+            "(x+y)*7",
+            "(x+y) : double",
+            "n^8",
+            "√2",
+            "!true or a",
+            "n/8+9:something",
+            "list : filter ft : map n * 3 ++ [end_elem]",
+            "cos x*2",
+            "(cos x)*2",
+        ];
+
+        for i in input.iter() {
+            let (rest, _fe) = FullExpression::parse(i).unwrap();
+            assert_eq!(rest, "");
+        }
+    }
+
+    #[test]
+    fn pipe_test() {
+        let input = "[1, 2, 3] : map f : add √4";
+        let (rest, _expr) = FullExpression::parse(input).unwrap();
+        assert_eq!(rest, "");
     }
 }

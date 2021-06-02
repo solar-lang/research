@@ -116,7 +116,7 @@ pub struct Not<'a> {
 
 impl<'a> Parse<'a> for Not<'a> {
     fn parse(input: &'a str) -> Res<'a, Self> {
-        let (rest, _) = keywords::Minus::parse(input)?;
+        let (rest, _) = keywords::Not::parse(input)?;
         let (rest, expr) = Value::parse_ws(rest)?;
 
         let span = unsafe { from_to(input, rest) };
