@@ -92,17 +92,20 @@ create_ast_expr!(Power, keywords::Power, Pipe);
 pub struct Pipe<'a> {
     pub span: &'a str,
     pub expr: Box<Expression<'a>>,
-    pub function_call: FunctionCall<'a>,
+    pub function_chain: Vec<FunctionCall<'a>>,
 }
 
 impl<'a> ParseExpression<'a> for Pipe<'a> {
     fn parse(input: &'a str) -> Res<'a, FullExpression> {
+        use nom::{multi::many1, sequence::preceded };
+
         let (rest, expr) = Expression::parse(input)?;
         let expr = Box::new(expr);
 
-        if let Ok((rest, _)) = keywords::Colon::parse_ws(rest) {
-            let (rest, function_call) = FunctionCall::parse_ws(rest)?;
+        let mut parse_function_chain_ws = many1(preceded(keywords::Colon::parse_ws, FunctionCall::parse_ws));
 
+        if let Ok((rest, function_chain)) = parse_function_chain_ws(rest) {
+            
             let span = unsafe { from_to(input, rest) };
 
             return Ok((
@@ -110,7 +113,7 @@ impl<'a> ParseExpression<'a> for Pipe<'a> {
                 Pipe {
                     span,
                     expr,
-                    function_call,
+                    function_chain,
                 }
                 .into(),
             ));
