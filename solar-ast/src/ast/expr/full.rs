@@ -131,6 +131,10 @@ impl<'a> Into<FullExpression<'a>> for Pipe<'a> {
 mod tests {
     use super::*;
 
+    fn parse(input: &str) -> FullExpression {
+        FullExpression::parse_ws(input).unwrap().1
+    }
+
     // No negation considered in parsing thus far
     #[test]
     fn negation1() {
@@ -147,8 +151,34 @@ mod tests {
     }
 
     #[test]
-    fn full_expr() {
+    fn concatination() {
+        let input = "a ++ b ";
+        let (rest, expr) = FullExpression::parse(input).unwrap();
+        assert_eq!(
+            expr,
+            FullExpression::Concat(Concat {
+                span: "a ++ b",
+                left: Box::new(parse("a")),
+                right: Box::new(parse("b")),
+            })
+        );
+
+        assert_eq!(rest, " ");
+    }
+
+    #[test]
+    fn cheap_exponent() {
+        let input = "a^b";
+        let (rest, _) = FullExpression::parse(input).unwrap();
+        assert_eq!(rest, "");
+    }
+
+
+
+    #[test]
+    fn cheap_tests() {
         let input = [
+            "x + y^2 + z + 9",
             "x",
             "(x)",
             "x+y",
