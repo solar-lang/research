@@ -1,5 +1,5 @@
 use crate::parse::{Parse, Res};
-use nom::{bytes::complete::tag, combinator::map};
+use nom::{bytes::complete::tag, combinator::{map, not}, sequence::terminated};
 
 macro_rules! keyword {
     ($name:ident, $tag:tt) => {
@@ -13,10 +13,26 @@ macro_rules! keyword {
             }
         }
     };
+
+    ($name:ident, $tag:tt, $not_followed_by:expr) => {
+        pub struct $name<'a> {
+            pub span: &'a str,
+        }
+
+        impl<'a> Parse<'a> for $name<'a> {
+            fn parse(input: &'a str) -> Res<'a, Self> {
+
+                let mapping = map(tag($tag), |span| $name { span });
+                let condition = not($not_followed_by);
+
+                terminated(mapping, condition)(input)
+            }
+        }
+    };
 }
 
 keyword!(Abs, "|");
-keyword!(Add, "+");
+keyword!(Add, "+", tag("+"));
 keyword!(And, "and");
 keyword!(Assign, "=");
 keyword!(BracketClose, "]");
