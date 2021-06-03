@@ -69,8 +69,30 @@ impl<'a> Parse<'a> for Identifier<'a> {
 
 pub fn is_keyword(word: &str) -> bool {
     [
-        "lib", "in", "let", "and", "or", "when", "when", "is", "then", "else", "return", "loop",
-        "break", "next", "set", "func", "function", "use", "type", "for",
+    "and", 
+    "break",
+    "do", 
+    "else", 
+    "false",
+    "for", 
+    "generic",
+    "if", 
+    "in", 
+    "is",
+    "let",
+    "loop",
+    "mut",
+    "next",
+    "or",
+    "pub",
+    "return", 
+    "test", 
+    "then", 
+    "true", 
+    "type", 
+    "use",
+    "when", 
+    "where",
     ]
     .contains(&word)
 }
@@ -93,7 +115,7 @@ mod tests {
     #[test]
     fn idents() {
         let span = "hello.world 7";
-        let res = Identifier::parse(&span);
+        let res = Identifier::parse(span);
 
         assert!(res.is_ok());
         let res = res.unwrap();
@@ -104,7 +126,7 @@ mod tests {
     #[test]
     fn fullidents() {
         let span = "hello.world 7";
-        let res = FullIdentifier::parse(&span);
+        let res = FullIdentifier::parse(span);
 
         assert!(res.is_ok());
         let res = res.unwrap();

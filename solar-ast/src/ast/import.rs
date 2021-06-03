@@ -6,6 +6,17 @@ pub struct Import<'a> {
     pub path: ImportPath<'a>,
 }
 
+impl<'a> Parse<'a> for Import<'a> {
+    fn parse(input: &'a str) -> Res<'a, Self> {
+        let (rest, _) = keywords::Use::parse(input)?;
+        let (rest, path) = ImportPath::parse_ws(rest)?;
+
+        let span = unsafe {from_to(input, rest)};
+
+        Ok((rest, Import { span, path}))
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ImportPath<'a> {
     pub span: &'a str,
@@ -90,5 +101,14 @@ mod tests {
         let (rest, imports) = imports.unwrap();
         assert_eq!(rest, "  ");
         assert_eq!(imports.span, &input[..(input.len() - 2)]);
+    }
+
+    // testing full imports with `use` keyword at the start
+    #[test]
+    fn full_imports() {
+        let input = "use std.collections.hashmap";
+        let (rest, import) = Import::parse(input).unwrap();
+        assert_eq!(import, Import{span: input, path: ImportPath::parse("std.collection.hashmap").unwrap().1});
+        assert_eq!(rest, "");
     }
 }

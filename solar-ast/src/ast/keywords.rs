@@ -100,5 +100,6 @@ keyword!(Then, "then", ident_char);
 keyword!(ThinArrow, "->");
 keyword!(True, "true", ident_char);
 keyword!(Type, "type", ident_char);
+keyword!(Use, "use", ident_char);
 keyword!(When, "when", ident_char);
 keyword!(Where, "where", ident_char);
