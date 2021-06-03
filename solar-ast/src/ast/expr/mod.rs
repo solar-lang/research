@@ -79,8 +79,6 @@ mod value_tests {
 
         assert_eq!(rest, " ");
     }
-
-
 }
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Value<'a> {

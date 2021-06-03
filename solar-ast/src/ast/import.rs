@@ -11,9 +11,9 @@ impl<'a> Parse<'a> for Import<'a> {
         let (rest, _) = keywords::Use::parse(input)?;
         let (rest, path) = ImportPath::parse_ws(rest)?;
 
-        let span = unsafe {from_to(input, rest)};
+        let span = unsafe { from_to(input, rest) };
 
-        Ok((rest, Import { span, path}))
+        Ok((rest, Import { span, path }))
     }
 }
 
@@ -108,7 +108,13 @@ mod tests {
     fn full_imports() {
         let input = "use std.collections.hashmap";
         let (rest, import) = Import::parse(input).unwrap();
-        assert_eq!(import, Import{span: input, path: ImportPath::parse("std.collection.hashmap").unwrap().1});
+        assert_eq!(
+            import,
+            Import {
+                span: input,
+                path: ImportPath::parse("std.collection.hashmap").unwrap().1
+            }
+        );
         assert_eq!(rest, "");
     }
 }

@@ -69,30 +69,9 @@ impl<'a> Parse<'a> for Identifier<'a> {
 
 pub fn is_keyword(word: &str) -> bool {
     [
-    "and", 
-    "break",
-    "do", 
-    "else", 
-    "false",
-    "for", 
-    "generic",
-    "if", 
-    "in", 
-    "is",
-    "let",
-    "loop",
-    "mut",
-    "next",
-    "or",
-    "pub",
-    "return", 
-    "test", 
-    "then", 
-    "true", 
-    "type", 
-    "use",
-    "when", 
-    "where",
+        "and", "break", "do", "else", "false", "for", "generic", "if", "in", "is", "let", "loop",
+        "mut", "next", "or", "pub", "return", "test", "then", "true", "type", "use", "when",
+        "where",
     ]
     .contains(&word)
 }

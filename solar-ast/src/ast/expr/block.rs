@@ -225,7 +225,8 @@ mod tests {
     fn if_test1() {
         let input = "if true do {something} ";
         let (rest, statement) = If::parse(input).unwrap();
-        assert_eq!(statement,
+        assert_eq!(
+            statement,
             If {
                 span: "if true do {something}",
                 condition: FullExpression::parse("true").unwrap().1,
@@ -235,7 +236,11 @@ mod tests {
         assert_eq!(rest, " ");
     }
 
-    derive_tests!(Return, return_statement, ["return", "return 7", "return None"]);
+    derive_tests!(
+        Return,
+        return_statement,
+        ["return", "return 7", "return None"]
+    );
     derive_tests!(If, if_statement, ["if !true do { print x }"]);
     derive_tests!(Loop, loop_statement, ["loop {}"]);
     derive_tests!(Let, let_statement, ["let x = tag n"]);

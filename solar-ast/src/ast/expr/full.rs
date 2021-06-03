@@ -97,15 +97,15 @@ pub struct Pipe<'a> {
 
 impl<'a> ParseExpression<'a> for Pipe<'a> {
     fn parse(input: &'a str) -> Res<'a, FullExpression> {
-        use nom::{multi::many1, sequence::preceded };
+        use nom::{multi::many1, sequence::preceded};
 
         let (rest, expr) = Expression::parse(input)?;
         let expr = Box::new(expr);
 
-        let mut parse_function_chain_ws = many1(preceded(keywords::Colon::parse_ws, FunctionCall::parse_ws));
+        let mut parse_function_chain_ws =
+            many1(preceded(keywords::Colon::parse_ws, FunctionCall::parse_ws));
 
         if let Ok((rest, function_chain)) = parse_function_chain_ws(rest) {
-            
             let span = unsafe { from_to(input, rest) };
 
             return Ok((

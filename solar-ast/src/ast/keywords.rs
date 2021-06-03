@@ -1,5 +1,9 @@
 use crate::parse::{Parse, Res};
-use nom::{bytes::complete::tag, combinator::{map, not}, sequence::terminated};
+use nom::{
+    bytes::complete::tag,
+    combinator::{map, not},
+    sequence::terminated,
+};
 
 macro_rules! keyword {
     ($name:ident, $tag:tt) => {
@@ -21,7 +25,6 @@ macro_rules! keyword {
 
         impl<'a> Parse<'a> for $name<'a> {
             fn parse(input: &'a str) -> Res<'a, Self> {
-
                 let mapping = map(tag($tag), |span| $name { span });
                 let condition = not($not_followed_by);
 
@@ -37,10 +40,7 @@ macro_rules! keyword {
 /// e.g. tag("true") might recognize "true_value", even though it's the keyword "true" we're searching for.
 fn ident_char(input: &str) -> nom::IResult<&str, char> {
     nom::character::complete::satisfy(|c| {
-     c >= 'a' && c <= 'z' ||
-     c >= 'A' && c <= 'Z' ||
-     c >= '0' && c <= '9' ||
-     c == '_'
+        c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == '_'
     })(input)
 }
 

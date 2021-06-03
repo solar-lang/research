@@ -23,11 +23,13 @@ impl<'a> crate::parse::Parse<'a> for Ast<'a> {
 
         let span = unsafe { crate::util::from_to(input, rest) };
 
-        Ok((rest, Ast {
-            span,
-            imports,
-            functions_and_types_and_tests,
-        }))
+        Ok((
+            rest,
+            Ast {
+                span,
+                imports,
+                functions_and_types_and_tests,
+            },
+        ))
     }
 }
-
