@@ -5,8 +5,8 @@ use crate::{ast::*, parse::*, util::*};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum FullExpression<'a> {
-    And(And<'a>),
     Or(Or<'a>),
+    And(And<'a>),
     Concat(Concat<'a>),
 
     Add(Add<'a>),
@@ -34,7 +34,7 @@ pub enum FullExpression<'a> {
 
 impl<'a> Parse<'a> for FullExpression<'a> {
     fn parse(input: &'a str) -> Res<'a, Self> {
-        And::parse(input)
+        Or::parse(input)
     }
 }
 
@@ -79,8 +79,8 @@ macro_rules! create_ast_expr {
     };
 }
 
-create_ast_expr!(And, keywords::And, Or);
-create_ast_expr!(Or, keywords::Or, Concat);
+create_ast_expr!(Or, keywords::Or, And);
+create_ast_expr!(And, keywords::And, Concat);
 create_ast_expr!(Concat, keywords::Concat, Add);
 create_ast_expr!(Add, keywords::Add, Subtract);
 create_ast_expr!(Subtract, keywords::Subtract, Multiply);
