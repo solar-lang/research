@@ -112,7 +112,7 @@ mod tests {
             import,
             Import {
                 span: input,
-                path: ImportPath::parse("std.collection.hashmap").unwrap().1
+                path: ImportPath::parse("std.collections.hashmap").unwrap().1
             }
         );
         assert_eq!(rest, "");
