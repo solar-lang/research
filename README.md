@@ -27,6 +27,14 @@ function birthday(p &Person) -> &Date
 function name(p &Person) -> &String
 ```
 
+## Current Progress (implementation wise)
+- [x] AST-Parser
+- [ ] AST -> Semantic AST parser
+- [ ] Semantic AST -> Cranelift/LLVM IR
+
+the last part should be decoupled as its own projects, as it makes it far easier to create jit compilers.
+I'm thinking about a jit compiler library called `easy-jit`. With a jet as logo. That would be nice I think.
+
 ## Notes
 
 ### solar repl
