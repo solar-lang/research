@@ -1,0 +1,9 @@
+name: sample_project
+version: "v0.0.0"
+
+description: ""
+repo: ""
+
+dependencies:
+  std: github.com:solar-lang/std@v1.0.0
+
