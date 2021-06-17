@@ -22,25 +22,39 @@ fn lib.forLoop
     // BEGIN FOR LOOP
     {
         let tmp1: Range<i64> = range(1, 10)
+
         loop {
             let elem: i64
             {
                 let tmp2 = next(&tmp1)
-                if eq(tmp2.tag, std.Option.None) {
-                    // free(tmp1)
-                    // free(tmp2)
-                    /* there might be references to elem */
-                    goto #loop1
-                }
-                elem = tmp2.value
-            }
+
+                jz tmp2.tag #loopend
+
+                elem = tmp2.value }
 
             sum = add(sum, elem)
         }
 
     }
-    #loop1
+    #loopend
     // END FOR LOOP
 
     return sum:i64
 }
+
+// Note that:
+loop {
+    ...
+    break
+    ...
+}
+
+// ====
+#loopstart:
+{
+    ...
+    goto #loopend
+    ...
+}
+goto #loopstart
+#loopend:

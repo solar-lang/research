@@ -1,0 +1,34 @@
+// vim: set syntax=rust:
+
+// lib.sol
+
+if clique tree 8 {
+    println "aaa"
+} else if clique tree 3 {
+    println "just 3"
+} else {
+    println "meh"
+}
+
+
+
+// Note: the following IR is not a final concept. It's wrong on some parts and focuses soley on the `for in` transformation
+{
+  let tmp: bool = clique(tree, 8):bool
+  if tmp {
+    println "aaa"
+    goto #ifend
+  }
+
+  // ... else if
+  tmp = clique(tree, 3):bool
+  if tmp {
+    println "just 3"
+    goto #ifend
+  }
+
+  // else here
+  println "meh"
+}
+#ifend
+
