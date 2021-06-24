@@ -1,0 +1,13 @@
+# Order of resolve
+
+when searching for the approprite function for myFunc(x)
+(where x is an Int)
+we search for myFunc in this order:
+
+        v-- actually in whatever package Int is defined
+1.)     search in int.sol directory
+
+2.)     search in imports in order of appearance
+
+3.)     search in LocalScope
+            -> This way we can locally define "cheap" catch-all solutions
