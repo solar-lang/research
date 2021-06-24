@@ -1,0 +1,44 @@
+// vim: set syntax=rust:
+
+let x = when expr
+is true then expression1
+else expression2
+
+---
+let x
+{
+let tmp = expr
+if eq(tmp, true) {
+    x = expression1
+    goto #whenend
+}
+x = expression2
+}
+#whenend
+
+
+
+
+let res = when it
+    is [] => 0
+    is [x] => x
+    is [x, ..rest] => x + sum(rest)
+
+-->
+
+let res
+{
+    // because it might be an expression, we first need to evaluate it.
+    let tmp = it
+
+    let tmp1 = next(it)
+    let it = tmp1.v1
+    let tmp1 = tmp1.v0
+    if isnone(tmp1) {
+        res = 0
+        goto #end
+    }
+    let elem1 = tmp.value
+
+}
+#end
