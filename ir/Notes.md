@@ -44,3 +44,15 @@ if some_value > 2 == false {
     }
 }
 ```
+
+
+
+## Open Questions
+
+> How do we deal with `when`
+ - multiple cases for respective guards
+ - don't mix array guards with other guards?
+
+> How do we deal with `closures`?
+ - need to move variables to the heap
+ - need to create anonymous structs?
