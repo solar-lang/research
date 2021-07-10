@@ -1,0 +1,48 @@
+// structs, enums, ( types in general ) live in the concrete scope of types (unlike functions)
+
+type Star
+- location (Float, Float)
+- mass Float
+
+// We want to keep as much information as possible. Also, this will create these function:
+
+// called like:     Star location= (3.14, 2.72) mass=9.99999
+Star(location=(Float, Float), mass=Float) -> Float
+location(&Star) -> &(Float, Float)
+mass(&Star) -> &Float
+
+
+
+here's a possible IR
+
+// concrete struct Scope:
+// actually: astro.bodies.Star<>
+struct Star:
+- location: std.Tuple<Float, Float> // private(astro.bodies)
+- mass: Float   // private(astro.bodies)
+
+// concrete function scope:
+
+/* private in astro.bodies package */
+private(astro.bodies)
+fn Star((named) location=std.Tuple<Float, Float>, mass: Float) -> Star {
+    // 'allocate' 24 bytes on stack, treat them like a Star
+    let template: Star = stack(24, Star) //:Star
+
+    template.location = location //:Float
+    template.mass = mass //:Float
+
+    return template //:astro.bodies.Star<>
+}
+
+private(astro.bodies)
+fn location(starRef &Star) -> &std.Tuple<Float, Float> {
+    // with_field_offset(Star, "location", starRef)
+    let::value tmp = starRef->location //std.Tuple<Float, Float>
+    return tmp
+}
+
+private(astro.bodies)
+fn mass(star &Star) -> &Float {
+    return star->mass
+}

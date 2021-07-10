@@ -111,10 +111,17 @@ Pro:
 - scoping
 - less intermediate values
 - assign once
+- easier to translate into SSA Form
 Contra:
 - more complex
 - nested
 - no deallocation for closed scopes
   -need implicit store
   - OR non linear memory usage (e.g. cant use stack)
+- `_1` is declared, _before_ it is used.
+- can't recognize multiple calculations of the same thing, like in ssa form
 
+
+
+
+## Question: How do we represent refs and derefs and (mut refs)?
