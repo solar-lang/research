@@ -1,0 +1,6 @@
+[submodule "interpreter"]
+	path = interpreter
+	url = http://github.com/solar-lang/solar-interpreter
+[submodule "parser"]
+	path = parser
+	url = http://github.com/solar-lang/solar-parser

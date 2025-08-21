@@ -1,0 +1,8 @@
+semi static programming language
+
+
+e.g.
+
+make your std sets, arrays, maps immutable
+
+allow for a dyn type, that you can operate on, like you would in clojure

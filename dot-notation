@@ -1,0 +1,36 @@
+
+let userid = user name email (date) . persist db . id
+
+return {:id: userid}
+
+
+
+----
+
+math
+
+f . g x
+
+f x . g
+
+a . b . c x
+
+(n -> c( b( a(n)))) x
+
+
+(lambda ? . lambda ?) x
+
+( dot (f:lambda ?) (g:lambda ?)) x
+==>
+(fun (n) => f:lambda n . g:lambda)
+
+
+e.g.
+
+dot(a: fun a -> b, b: fun b -> c) -> fun a -> c
+
+
+NOTE:
+I like this, it also means, we will use / for all paths.
+e.g. identifiers are not just [a-z][a-z0-9_]*, but can also contain /
+

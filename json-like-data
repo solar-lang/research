@@ -1,0 +1,22 @@
+
+in json it's annoying to get this line:
+
+let a = {
+    x: "ahjk"
+    y: "ahjskf"
+}
+
+
+to this one:
+
+let x = "ahjks
+
+
+but if we use
+
+let a = {
+    x = "asjkdl",
+    y = "djksla"
+}
+
+it's fine!
