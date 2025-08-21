@@ -1,7 +1,7 @@
 -- clousures in Solar
--- Problem with this: (..args) => <expr>.. where does expression end?
+-- Problem here:     (..args) => <expr>.. where does expression end?
 -- trivial solution: (..args) => (<expr>) feels redundant
--- nicer solution: (...args) { <expr> }
+-- similar solution: (...args) { <expr> }
 
 [1, 2, 3, 4, ] :map (n) { n^2 }
     :filter (elem)  {
@@ -25,4 +25,3 @@
 filter list (elem)  => elem > 5
 --
 filter list (elem)  => elem > 5 + 5 : not
-
