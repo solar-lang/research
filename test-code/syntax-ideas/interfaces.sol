@@ -1,4 +1,6 @@
 
+-- nah
+
 interface Writer (
     fun write(self, writable StringBuilder)
 )

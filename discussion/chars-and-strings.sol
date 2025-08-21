@@ -5,10 +5,10 @@
 # it's type is going to be Char.
 # Char implements
 #
-# autokonvert(self) -> String
+# autoconvert(self) -> String
 
 
-there are reasons against using autokonvert, which would disallow this as well
+there are reasons against using autoconvert, which would disallow this as well
 
 
 # For now: No Char type. Maybe use Stack for small strings
