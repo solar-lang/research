@@ -1,4 +1,4 @@
-## Interfaces / Traits
+# Interfaces / Traits
 
 let's go with this interface here (pseudo syntax)
 
@@ -25,3 +25,31 @@ what if we don't have ToString(int)?
 We can supply our own method. Here we cast an opened file as ToString:
 
     ToString (fs.open "mytable.csv") toString=readToString
+
+
+## Resolving symbols
+Let's say we have a 
+```go
+// iterator.sol
+interface Iterator a
+- next(self)-> Option a
+
+fun map(iter: Iterator a, f: fun(a): b): Iterator b {
+	...
+}
+
+// arrayIter.go
+
+struct ArrayIter a
+- index: Mut Int
+- array: Array a
+
+fun next(iter: ArrayIter a) -> Option a {
+	...
+}
+
+// Using this line, we signal that ArrayIter must implement this,
+// and also enable call side symbol resovle to all mehtods of Iterator a
+impl iterator.Iterator
+
+```
